@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { useCart } from "@/lib/cart-context";
 import { IconSearch, IconBag } from "./Icons";
 
@@ -26,7 +27,7 @@ export default function Header({ nombreTienda }) {
     <header className="pi-header">
       <div className="pi-header-top">
         <Link href="/" className="pi-logo">
-          <span className="pi-logo-mark">PU</span>
+          <Image src="/logo-mark.png" alt={nombreTienda} width={38} height={36} className="pi-logo-mark-img" priority />
           <span className="pi-logo-text">{nombreTienda}</span>
         </Link>
         <form

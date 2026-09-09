@@ -146,6 +146,7 @@ create table if not exists store_config (
   whatsapp text not null default '573000000000',
   instagram text default '',
   facebook text default '',
+  tiktok text default '',
   costo_envio numeric not null default 12000,
   envio_gratis_desde numeric not null default 350000,
   ciudades text default 'Todo Colombia',

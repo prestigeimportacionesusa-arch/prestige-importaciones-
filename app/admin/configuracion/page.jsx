@@ -18,8 +18,9 @@ export default async function AdminConfigPage() {
         <div className="pi-form-grid">
           <input name="nombre_tienda" placeholder="Nombre de la tienda" defaultValue={cfg.nombre_tienda} />
           <input name="whatsapp" placeholder="WhatsApp (ej: 573001234567)" defaultValue={cfg.whatsapp} />
-          <input name="instagram" placeholder="Instagram" defaultValue={cfg.instagram} />
-          <input name="facebook" placeholder="Facebook" defaultValue={cfg.facebook} />
+          <input name="instagram" placeholder="Instagram (URL completa)" defaultValue={cfg.instagram} />
+          <input name="tiktok" placeholder="TikTok (URL completa)" defaultValue={cfg.tiktok} />
+          <input name="facebook" placeholder="Facebook (opcional)" defaultValue={cfg.facebook} className="pi-span-2" />
           <input type="number" name="costo_envio" placeholder="Costo de envío" defaultValue={cfg.costo_envio} />
           <input type="number" name="envio_gratis_desde" placeholder="Envío gratis desde" defaultValue={cfg.envio_gratis_desde} />
           <input name="ciudades" placeholder="Ciudades de cobertura (texto corto para el inicio)" defaultValue={cfg.ciudades} className="pi-span-2" />

@@ -27,13 +27,21 @@ export default async function RootLayout({ children }) {
 
   return (
     <html lang="es">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Jost:wght@300;400;500;600&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body>
         <MetaPixel pixelId={process.env.NEXT_PUBLIC_META_PIXEL_ID} />
         <div className="pi-app">
           <CartProvider>
             <Header nombreTienda={config.nombre_tienda} />
             <main className="pi-main">{children}</main>
-            <Footer nombreTienda={config.nombre_tienda} />
+            <Footer nombreTienda={config.nombre_tienda} instagram={config.instagram} tiktok={config.tiktok} facebook={config.facebook} />
             <WhatsAppFloat whatsapp={config.whatsapp} />
           </CartProvider>
         </div>

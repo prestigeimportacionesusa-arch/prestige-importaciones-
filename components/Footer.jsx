@@ -1,12 +1,27 @@
 import Link from "next/link";
+import { IconInstagram, IconTiktok } from "./Icons";
 
-export default function Footer({ nombreTienda }) {
+export default function Footer({ nombreTienda, instagram, tiktok, facebook }) {
+  const socials = [
+    instagram ? { href: instagram, label: "Instagram", Icon: IconInstagram } : null,
+    tiktok ? { href: tiktok, label: "TikTok", Icon: IconTiktok } : null,
+  ].filter(Boolean);
+
   return (
     <footer className="pi-footer">
       <div className="pi-footer-cols">
         <div>
           <div className="pi-logo-text">{nombreTienda}</div>
           <p>Perfumes 100% originales. Envíos a todo Colombia.</p>
+          {socials.length ? (
+            <div className="pi-footer-socials">
+              {socials.map(({ href, label, Icon }) => (
+                <a key={label} href={href} target="_blank" rel="noreferrer" aria-label={label}>
+                  <Icon />
+                </a>
+              ))}
+            </div>
+          ) : null}
         </div>
         <div>
           <h4>Tienda</h4>

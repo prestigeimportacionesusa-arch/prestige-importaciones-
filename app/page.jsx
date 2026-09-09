@@ -43,6 +43,20 @@ export default async function HomePage() {
         <div className="pi-benefit"><IconCard /><div><b>Todos los medios de pago</b><span>Tarjetas, PSE, transferencia</span></div></div>
       </section>
 
+      {(config.instagram || config.tiktok) ? (
+        <section className="pi-social-banner">
+          <span className="pi-social-banner-label">Síguenos</span>
+          <div className="pi-social-banner-links">
+            {config.instagram ? (
+              <a href={config.instagram} target="_blank" rel="noreferrer">📸 Instagram</a>
+            ) : null}
+            {config.tiktok ? (
+              <a href={config.tiktok} target="_blank" rel="noreferrer">🎵 TikTok</a>
+            ) : null}
+          </div>
+        </section>
+      ) : null}
+
       {featured.length ? (
         <section className="pi-section">
           <div className="pi-section-title align-left">

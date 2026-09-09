@@ -58,3 +58,21 @@ export function IconClose() {
 export function Diamond() {
   return <span className="pi-diamond">◆</span>;
 }
+
+export function IconInstagram({ size = 20 }) {
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.6">
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+export function IconTiktok({ size = 20 }) {
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} fill="currentColor">
+      <path d="M14.5 3h2.6c.2 1.5 1.1 2.9 2.6 3.5.6.3 1.3.4 2 .4v2.7c-1.4 0-2.7-.4-3.9-1.2v6.1c0 3.1-2.5 5.5-5.5 5.5S6.8 17.6 6.8 14.5c0-2.9 2.2-5.2 5-5.5v2.8c-1.2.2-2.2 1.3-2.2 2.6 0 1.5 1.2 2.7 2.7 2.7s2.7-1.2 2.7-2.7V3z"/>
+    </svg>
+  );
+}
