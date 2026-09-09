@@ -327,3 +327,8 @@ img { max-width: 100%; display: block; }
 .pi-social-banner-links { display:flex; gap:16px; flex-wrap:wrap; }
 .pi-social-banner-links a { color: var(--cream); font-size:14px; border:1px solid var(--line); padding:7px 16px; transition: border-color .2s, color .2s; }
 .pi-social-banner-links a:hover { border-color: var(--gold); color: var(--gold); }
+
+/* Puntos del carrusel de banners */
+.pi-hero-dots { position:absolute; z-index:2; bottom:16px; left:50%; transform:translateX(-50%); display:flex; gap:8px; }
+.pi-hero-dot { width:8px; height:8px; border-radius:50%; background: rgba(243,238,227,0.35); border:none; padding:0; cursor:pointer; transition: background .2s, transform .2s; }
+.pi-hero-dot.active { background: var(--gold); transform: scale(1.3); }
