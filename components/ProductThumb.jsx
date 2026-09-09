@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { BLUR_PLACEHOLDER } from "@/lib/utils";
 
 function BottleArt({ genero }) {
   const hue = genero === "Mujer" ? "#7C2B36" : genero === "Hombre" ? "#8C6B32" : "#4B5B52";
@@ -32,7 +33,9 @@ export default function ProductThumb({ product, priority }) {
           sizes="(max-width: 700px) 50vw, (max-width: 960px) 33vw, 25vw"
           className="pi-thumb-img"
           priority={!!priority}
-          quality={70}
+          quality={65}
+          placeholder="blur"
+          blurDataURL={BLUR_PLACEHOLDER}
         />
       );
     }
