@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getProductBySlug, getProducts, getPromotions, getConfig, getApprovedReviews } from "@/lib/data";
 import { formatCOP, computeFinalPrice } from "@/lib/utils";
-import ProductThumb from "@/components/ProductThumb";
+import ProductGallery from "@/components/ProductGallery";
 import ProductActions from "@/components/ProductActions";
 import TrackViewContent from "@/components/TrackViewContent";
 import ProductCard from "@/components/ProductCard";
@@ -68,17 +68,7 @@ export default async function ProductPage({ params }) {
       {/* eslint-disable-next-line react/no-danger */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div className="pi-product-top">
-        <div className="pi-product-gallery-col">
-          <div className="pi-product-gallery"><ProductThumb product={product} priority /></div>
-          {product.imagenes_adicionales?.length ? (
-            <div className="pi-gallery-thumbs">
-              {product.imagenes_adicionales.map((url) => (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img key={url} src={url} alt={product.nombre} className="pi-gallery-thumb" />
-              ))}
-            </div>
-          ) : null}
-        </div>
+        <ProductGallery product={product} />
         <div className="pi-product-info">
           <div className="pi-card-brand">{product.marca}</div>
           <h1>{product.nombre}</h1>
