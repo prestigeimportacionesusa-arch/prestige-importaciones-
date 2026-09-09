@@ -3,6 +3,7 @@ import { getProductBySlug, getProducts, getPromotions, getConfig, getApprovedRev
 import { formatCOP, computeFinalPrice } from "@/lib/utils";
 import ProductThumb from "@/components/ProductThumb";
 import ProductActions from "@/components/ProductActions";
+import TrackViewContent from "@/components/TrackViewContent";
 import ProductCard from "@/components/ProductCard";
 import { Diamond } from "@/components/Icons";
 
@@ -10,9 +11,23 @@ export async function generateMetadata({ params }) {
   const { slug } = await params;
   const product = await getProductBySlug(slug);
   if (!product) return { title: "Producto no encontrado" };
+  const title = `${product.nombre} ${product.marca}`;
+  const description = product.descripcion || `${product.nombre} de ${product.marca}, ${product.genero.toLowerCase()}. Perfume 100% original.`;
+  // Solo usamos la imagen para compartir en redes si es una URL real
+  // (http/https) — las fotos importadas del catálogo original son datos
+  // incrustados (data:image/...) y Facebook/WhatsApp no pueden mostrarlas
+  // como vista previa.
+  const shareImage = product.imagen && product.imagen.startsWith("http") ? product.imagen : undefined;
   return {
-    title: `${product.nombre} ${product.marca} — Prestige Importaciones`,
-    description: product.descripcion || `${product.nombre} de ${product.marca}, ${product.genero.toLowerCase()}. Perfume 100% original.`,
+    title,
+    description,
+    alternates: { canonical: `/producto/${product.slug}` },
+    openGraph: {
+      title: `${title} — Prestige Importaciones`,
+      description,
+      type: "website",
+      images: shareImage ? [{ url: shareImage }] : undefined,
+    },
   };
 }
 
@@ -54,7 +69,7 @@ export default async function ProductPage({ params }) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div className="pi-product-top">
         <div className="pi-product-gallery-col">
-          <div className="pi-product-gallery"><ProductThumb product={product} /></div>
+          <div className="pi-product-gallery"><ProductThumb product={product} priority /></div>
           {product.imagenes_adicionales?.length ? (
             <div className="pi-gallery-thumbs">
               {product.imagenes_adicionales.map((url) => (
@@ -86,6 +101,7 @@ export default async function ProductPage({ params }) {
             </div>
           ) : null}
           <ProductActions product={product} price={price} whatsapp={config.whatsapp} />
+          <TrackViewContent product={product} price={price} />
         </div>
       </div>
 

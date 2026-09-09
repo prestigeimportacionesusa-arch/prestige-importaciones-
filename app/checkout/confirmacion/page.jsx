@@ -5,6 +5,7 @@ import { fetchWompiTransaction } from "@/lib/wompi";
 import { formatCOP } from "@/lib/utils";
 import { waUrl, waOrderMessage } from "@/lib/whatsapp";
 import { IconWhatsapp } from "@/components/Icons";
+import TrackPurchaseIfPaid from "@/components/TrackPurchaseIfPaid";
 
 export const metadata = { title: "Confirmación de pedido — Prestige Importaciones" };
 
@@ -78,6 +79,7 @@ export default async function ConfirmacionPage({ searchParams }) {
 
   return (
     <div className="pi-order-confirm">
+      <TrackPurchaseIfPaid order={waOrder} />
       <h1>¡Gracias, {order.cliente_nombre.split(" ")[0]}!</h1>
       <p>Tu pedido <b>#{order.numero}</b> fue registrado por {formatCOP(order.total)}.</p>
       <p className={`pi-order-status-note pi-status-${mensaje.tono}`}>{mensaje.texto}</p>

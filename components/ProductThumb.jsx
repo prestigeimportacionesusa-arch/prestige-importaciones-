@@ -12,10 +12,18 @@ function BottleArt({ genero }) {
   );
 }
 
-export default function ProductThumb({ product }) {
+export default function ProductThumb({ product, priority }) {
   if (product?.imagen) {
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={product.imagen} alt={`${product.nombre} ${product.marca}`} className="pi-thumb-img" />;
+    return (
+      <img
+        src={product.imagen}
+        alt={`${product.nombre} ${product.marca}`}
+        className="pi-thumb-img"
+        loading={priority ? "eager" : "lazy"}
+        decoding="async"
+      />
+    );
   }
   return <BottleArt genero={product?.genero} />;
 }

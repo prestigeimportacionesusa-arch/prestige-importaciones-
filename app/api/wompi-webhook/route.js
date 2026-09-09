@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { verifyWompiEventChecksum, wompiStatusToEstadoPago } from "@/lib/wompi";
 import { createServiceClient } from "@/lib/supabase/service";
+import { sendPurchaseCapiEvent } from "@/lib/meta-capi";
 
 // Esta es la URL que se configura en el dashboard de Wompi (Desarrollo ->
 // Programadores -> URL de eventos). Wompi envía aquí un POST cada vez que
@@ -36,7 +37,7 @@ export async function POST(request) {
   // (evita procesar el mismo evento dos veces si Wompi reintenta el envío).
   const { data: order } = await supabase
     .from("orders")
-    .select("id, estado_pago")
+    .select("*, order_items(*)")
     .eq("referencia", reference)
     .single();
 
@@ -51,6 +52,18 @@ export async function POST(request) {
     .from("orders")
     .update({ estado_pago: nuevoEstadoPago })
     .eq("id", order.id);
+
+  // Reporte a Meta (Conversion API) solo cuando el pago quedó aprobado de
+  // verdad. Si falla el envío a Meta, no afecta el pedido — ya está guardado.
+  if (nuevoEstadoPago === "Pagado") {
+    await sendPurchaseCapiEvent({
+      numero: order.numero,
+      total: order.total,
+      cliente_correo: order.cliente_correo,
+      cliente_celular: order.cliente_celular,
+      items: order.order_items || [],
+    });
+  }
 
   return NextResponse.json({ ok: true });
 }

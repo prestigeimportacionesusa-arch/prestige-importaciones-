@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import { trackAddToCart } from "./meta-pixel";
 
 const CartContext = createContext(null);
 const STORAGE_KEY = "pi_cart";
@@ -29,7 +30,7 @@ export function CartProvider({ children }) {
     }
   }, [cart, ready]);
 
-  const addToCart = useCallback((product, qty = 1) => {
+  const addToCart = useCallback((product, qty = 1, price) => {
     setCart((prev) => {
       const existing = prev.find((c) => c.id === product.id);
       if (existing) {
@@ -37,6 +38,7 @@ export function CartProvider({ children }) {
       }
       return [...prev, { id: product.id, qty }];
     });
+    trackAddToCart(product, qty, price);
   }, []);
 
   const updateQty = useCallback((id, qty) => {

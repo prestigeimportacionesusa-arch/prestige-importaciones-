@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useCart } from "@/lib/cart-context";
 import { createClient } from "@/lib/supabase/client";
 import { getWompiCheckoutUrl } from "@/lib/actions";
 import { formatCOP, computeFinalPrice, hasFreeShipping, computeRecargo, recargoLabel, PAYMENT_METHOD_LABELS } from "@/lib/utils";
 import { waUrl, waOrderMessage } from "@/lib/whatsapp";
+import { trackInitiateCheckout, trackPurchase } from "@/lib/meta-pixel";
 import { IconWhatsapp } from "./Icons";
 
 function TransferDetails({ config }) {
@@ -44,6 +45,19 @@ export default function CheckoutClient({ products, promotions, config }) {
   const { cart, clearCart } = useCart();
   const [form, setForm] = useState({ nombre: "", celular: "", correo: "", direccion: "", ciudad: "", departamento: "", barrio: "", info_adicional: "", metodo_pago: "" });
   const [orderResult, setOrderResult] = useState(null);
+
+  // Se dispara Purchase solo para contraentrega/transferencia (aquí no hay
+  // pasarela externa que confirme el pago — el pedido en sí es la conversión
+  // completada). Para tarjeta/PSE, Purchase se dispara en la página de
+  // confirmación después de volver de Wompi, y solo si el pago quedó
+  // realmente "Pagado".
+  useEffect(() => {
+    if (orderResult) {
+      trackPurchase(orderResult, orderResult.numero ? `order_${orderResult.numero}` : undefined);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orderResult]);
+
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -69,6 +83,16 @@ export default function CheckoutClient({ products, promotions, config }) {
   const recargo = form.metodo_pago ? computeRecargo(config, form.metodo_pago, baseTotal) : 0;
   const total = baseTotal + recargo;
   const enabledMethods = Object.entries(config.metodos_pago || {}).filter(([, v]) => v).map(([k]) => k);
+
+  const trackedRef = useRef(false);
+  useEffect(() => {
+    if (!trackedRef.current && lines.length) {
+      trackInitiateCheckout(lines, baseTotal);
+      trackedRef.current = true;
+    }
+    // Solo se dispara una vez al entrar al checkout con productos en el carrito.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (orderResult) {
     return (

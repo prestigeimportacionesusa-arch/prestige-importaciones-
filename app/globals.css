@@ -134,7 +134,7 @@ img { max-width: 100%; display: block; }
       .pi-chip { border:1px solid var(--line); color: var(--cream); font-size:12px; padding: 5px 10px; }
       .pi-qty-row { display:flex; gap:12px; align-items:center; margin-bottom: 12px; }
       .pi-qty { display:flex; align-items:center; border:1px solid var(--line); }
-      .pi-qty button { background:none; border:none; color: var(--cream); width: 32px; height:32px; }
+      .pi-qty button { background:none; border:none; color: var(--cream); width: 40px; height:40px; font-size:16px; }
       .pi-qty span { width: 30px; text-align:center; font-size:14px; }
       .pi-product-actions-2 { display:flex; flex-wrap:wrap; gap:10px; margin-bottom: 10px; }
       .pi-stock-warn { color: var(--wine); font-size: 13px; }

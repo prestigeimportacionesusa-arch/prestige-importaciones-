@@ -3,11 +3,23 @@ import { CartProvider } from "@/lib/cart-context";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
+import MetaPixel from "@/components/MetaPixel";
 import { getConfig } from "@/lib/data";
 
 export const metadata = {
-  title: "Prestige Importaciones — Perfumes 100% originales",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://prestige-importaciones.vercel.app"),
+  title: {
+    default: "Prestige Importaciones — Perfumes 100% originales",
+    template: "%s — Prestige Importaciones",
+  },
   description: "Perfumes árabes y de diseñador 100% originales. Envíos a todo Colombia, pago contra entrega.",
+  openGraph: {
+    type: "website",
+    locale: "es_CO",
+    siteName: "Prestige Importaciones",
+    title: "Prestige Importaciones — Perfumes 100% originales",
+    description: "Perfumes árabes y de diseñador 100% originales. Envíos a todo Colombia, pago contra entrega.",
+  },
 };
 
 export default async function RootLayout({ children }) {
@@ -16,6 +28,7 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="es">
       <body>
+        <MetaPixel pixelId={process.env.NEXT_PUBLIC_META_PIXEL_ID} />
         <div className="pi-app">
           <CartProvider>
             <Header nombreTienda={config.nombre_tienda} />

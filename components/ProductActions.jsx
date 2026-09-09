@@ -19,7 +19,7 @@ export default function ProductActions({ product, price, whatsapp }) {
           <span>{qty}</span>
           <button onClick={() => setQty((q) => q + 1)}>+</button>
         </div>
-        <button className="btn btn-primary" disabled={!product.disponibilidad} onClick={() => addToCart(product, qty)}>
+        <button className="btn btn-primary" disabled={!product.disponibilidad} onClick={() => addToCart(product, qty, price)}>
           Agregar al carrito
         </button>
       </div>
@@ -27,7 +27,7 @@ export default function ProductActions({ product, price, whatsapp }) {
         <button
           className="btn btn-outline"
           disabled={!product.disponibilidad}
-          onClick={() => { addToCart(product, qty); router.push("/checkout"); }}
+          onClick={() => { addToCart(product, qty, price); router.push("/checkout"); }}
         >
           Comprar ahora
         </button>

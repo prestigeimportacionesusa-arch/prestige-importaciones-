@@ -40,7 +40,7 @@ export default function ProductCard({ product, promotions }) {
           <button
             className="btn btn-primary"
             disabled={!product.disponibilidad}
-            onClick={() => addToCart(product, 1)}
+            onClick={() => addToCart(product, 1, price)}
           >
             Agregar
           </button>
