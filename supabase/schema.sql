@@ -60,6 +60,7 @@ create table if not exists banners (
   titulo text not null default '',
   subtitulo text not null default '',
   cta text not null default 'Comprar ahora',
+  promo_badge text default '',
   tono text not null default 'gold',
   orden integer not null default 0
 );

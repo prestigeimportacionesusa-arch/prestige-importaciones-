@@ -70,10 +70,15 @@ img { max-width: 100%; display: block; }
       .pi-main { max-width: 1240px; margin: 0 auto; padding: 0 16px; }
 
       /* Hero */
-      .pi-hero { display:grid; grid-template-columns: 1fr; align-items:center; gap: 24px; padding: 36px 0 20px; }
+      .pi-hero { position:relative; overflow:hidden; display:block; padding: 44px 28px; margin: 20px 0; background: linear-gradient(135deg, var(--surface) 0%, var(--bg) 75%); border: 1px solid var(--line); }
+      .pi-hero-bg { position:absolute; inset:0; z-index:0; pointer-events:none; }
+      .pi-hero-bottle { position:absolute; color: var(--gold-deep); }
+      .pi-hero-bottle-1 { width:280px; height:280px; right:-50px; top:-50px; opacity:0.16; }
+      .pi-hero-bottle-2 { width:190px; height:190px; right:140px; bottom:-40px; opacity:0.1; }
+      .pi-hero-text { position:relative; z-index:1; max-width: 520px; }
+      .pi-hero-badge { display:inline-block; background: var(--gold); color:#171410; font-weight:700; font-size:12px; letter-spacing:0.04em; padding:7px 14px; margin-bottom:16px; text-transform:uppercase; }
       .pi-hero-text h1 { font-family: var(--serif); font-size: 38px; font-weight:600; font-style:italic; line-height:1.1; margin: 6px 0 10px; color: var(--cream); }
       .pi-hero-text p { color: var(--muted); margin-bottom: 20px; font-size:15px; }
-      .pi-hero-art { display:none; }
 
       /* Benefits */
       .pi-benefits { display:grid; grid-template-columns: repeat(2,1fr); gap: 14px; padding: 20px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-bottom: 30px; }
@@ -279,8 +284,6 @@ img { max-width: 100%; display: block; }
       }
       @media (min-width: 960px) {
         .pi-grid { grid-template-columns: repeat(4,1fr); }
-        .pi-hero { grid-template-columns: 1fr 380px; }
-        .pi-hero-art { display:block; }
         .pi-hero-text h1 { font-size: 44px; }
         .pi-shop { grid-template-columns: 240px 1fr; display:grid; align-items:start; }
         .pi-brands-grid { grid-template-columns: repeat(4,1fr); }
