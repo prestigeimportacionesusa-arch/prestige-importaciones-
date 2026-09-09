@@ -132,7 +132,7 @@ img { max-width: 100%; display: block; }
 
       /* Product page */
       .pi-product-top { display:grid; grid-template-columns: 1fr; gap: 24px; padding: 24px 0; }
-      .pi-product-gallery { aspect-ratio: 3/4; background: var(--surface); border: 1px solid var(--line); overflow:hidden; }
+      .pi-product-gallery { position:relative; aspect-ratio: 3/4; background: var(--surface); border: 1px solid var(--line); overflow:hidden; }
       .pi-product-info h1 { font-family: var(--serif); font-size: 34px; font-weight:600; font-style:italic; margin: 4px 0 8px; }
       .pi-rating { color: var(--gold); font-size:13px; margin-bottom:8px; }
       .pi-product-prices { margin: 10px 0; }
@@ -157,7 +157,7 @@ img { max-width: 100%; display: block; }
       .pi-cart-page h1, .pi-checkout-form h1 { font-family: var(--serif); font-weight:500; font-size:26px; margin-bottom: 20px; }
       .pi-cart-lines { display:flex; flex-direction:column; gap:12px; margin-bottom: 20px; }
       .pi-cart-line { display:grid; grid-template-columns: 60px 1fr auto auto; gap:12px; align-items:center; background: var(--surface); border:1px solid var(--line); padding: 10px; }
-      .pi-cart-line-media { width:60px; height:80px; background:#141316; overflow:hidden; }
+      .pi-cart-line-media { position:relative; width:60px; height:80px; background:#141316; overflow:hidden; }
       .pi-cart-line-price { font-weight:600; }
       .pi-remove { background:none; border:none; color: var(--muted); }
       .pi-cart-summary { background: var(--surface); border:1px solid var(--line); padding: 18px; display:flex; flex-direction:column; gap:10px; }
@@ -244,6 +244,7 @@ img { max-width: 100%; display: block; }
       .pi-admin-table td { padding: 8px; border-bottom:1px solid var(--line); vertical-align:middle; }
       .pi-admin-table td svg, .pi-admin-table td .pi-bottle { width: 34px; height: 46px; }
       .pi-admin-table td .pi-thumb-img { width: 34px; height: 46px; object-fit: contain; }
+      .pi-thumb-box { position:relative; width:34px; height:46px; background:#141316; }
       .row-review { background: rgba(124,43,54,0.08); }
       .pi-tag-review { background: var(--wine); color:#fff; font-size:10px; padding:2px 6px; margin-left:6px; }
       .pi-flags { display:flex; gap:4px; flex-wrap:wrap; }
@@ -260,7 +261,7 @@ img { max-width: 100%; display: block; }
       .pi-recargo-row { display:grid; grid-template-columns: 1fr 160px 100px; gap:10px; align-items:center; background: var(--surface); border:1px solid var(--line); padding:10px 12px; }
       .pi-recargo-row select, .pi-recargo-row input[type=number] { background: var(--bg-alt); border:1px solid var(--line); color: var(--cream); padding:6px 8px; }
       .pi-image-field { display:flex; gap:12px; align-items:center; }
-      .pi-image-preview { width:60px; height:80px; flex-shrink:0; background:#141316; overflow:hidden; border:1px solid var(--line); }
+      .pi-image-preview { position:relative; width:60px; height:80px; flex-shrink:0; background:#141316; overflow:hidden; border:1px solid var(--line); }
       .pi-image-field input { flex:1; }
 
       /* Modal */
@@ -309,9 +310,9 @@ img { max-width: 100%; display: block; }
 .pi-lastunits { display: inline-block; background: var(--wine); color: var(--cream); font-size: 12px; padding: 4px 10px; margin-bottom: 10px; }
 .pi-product-gallery-col { display: flex; flex-direction: column; gap: 10px; }
 .pi-gallery-thumbs { display: flex; gap: 8px; flex-wrap: wrap; }
-.pi-gallery-thumb { width: 56px; height: 56px; object-fit: cover; border: 1px solid var(--line); cursor: pointer; opacity: 0.7; transition: border-color .2s, opacity .2s; }
-.pi-gallery-thumb:hover { opacity: 1; }
-.pi-gallery-thumb.active { border-color: var(--gold); opacity: 1; }
+.pi-gallery-thumb-box { position:relative; width: 56px; height: 56px; border: 1px solid var(--line); cursor: pointer; opacity: 0.7; transition: border-color .2s, opacity .2s; background:#141316; padding:0; }
+.pi-gallery-thumb-box:hover { opacity: 1; }
+.pi-gallery-thumb-box.active { border-color: var(--gold); opacity: 1; }
 
 /* Estados de confirmación de pago (Wompi) */
 .pi-status-ok { color: #4caf7d; font-weight: 600; }

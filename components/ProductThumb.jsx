@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 function BottleArt({ genero }) {
   const hue = genero === "Mujer" ? "#7C2B36" : genero === "Hombre" ? "#8C6B32" : "#4B5B52";
   return (
@@ -13,11 +15,31 @@ function BottleArt({ genero }) {
 }
 
 export default function ProductThumb({ product, priority }) {
-  if (product?.imagen) {
+  const src = product?.imagen;
+  if (src) {
+    // Las URLs reales (http/https, ej. fotos subidas a postimg.cc) pasan por
+    // el optimizador de Next.js: se comprimen, se convierten a WebP, y se
+    // sirven en el tamaño justo para cada pantalla — así una foto pesada
+    // tomada con el celular no hace lenta la tienda para los clientes.
+    // Las fotos originales del catálogo (guardadas como data:image...) se
+    // muestran directo, ya vienen livianas desde la importación inicial.
+    if (src.startsWith("http")) {
+      return (
+        <Image
+          src={src}
+          alt={`${product.nombre} ${product.marca}`}
+          fill
+          sizes="(max-width: 700px) 50vw, (max-width: 960px) 33vw, 25vw"
+          className="pi-thumb-img"
+          priority={!!priority}
+          quality={70}
+        />
+      );
+    }
     // eslint-disable-next-line @next/next/no-img-element
     return (
       <img
-        src={product.imagen}
+        src={src}
         alt={`${product.nombre} ${product.marca}`}
         className="pi-thumb-img"
         loading={priority ? "eager" : "lazy"}

@@ -38,7 +38,7 @@ export default async function AdminProductsPage({ searchParams }) {
         <tbody>
           {list.map((p) => (
             <tr key={p.id} className={(p.revisar || p._sinPrecio || p._sinImagen) ? "row-review" : ""}>
-              <td><ProductThumb product={p} /></td>
+              <td><div className="pi-thumb-box"><ProductThumb product={p} /></div></td>
               <td>
                 {p.nombre}
                 {p.revisar ? <span className="pi-tag-review">revisar</span> : null}

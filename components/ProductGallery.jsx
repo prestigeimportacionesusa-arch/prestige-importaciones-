@@ -1,7 +1,34 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import ProductThumb from "./ProductThumb";
+
+function GalleryImage({ src, alt, priority }) {
+  if (src.startsWith("http")) {
+    return (
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        sizes="(max-width: 700px) 90vw, 380px"
+        className="pi-thumb-img"
+        priority={!!priority}
+        quality={72}
+      />
+    );
+  }
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src={src} alt={alt} className="pi-thumb-img" />;
+}
+
+function GalleryThumbImage({ src, alt }) {
+  if (src.startsWith("http")) {
+    return <Image src={src} alt={alt} fill sizes="56px" className="pi-thumb-img" quality={60} />;
+  }
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src={src} alt={alt} className="pi-thumb-img" />;
+}
 
 export default function ProductGallery({ product }) {
   const allImages = [product.imagen, ...(product.imagenes_adicionales || [])].filter(Boolean);
@@ -18,20 +45,19 @@ export default function ProductGallery({ product }) {
   return (
     <div className="pi-product-gallery-col">
       <div className="pi-product-gallery">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={allImages[selected]} alt={`${product.nombre} ${product.marca}`} className="pi-thumb-img" />
+        <GalleryImage src={allImages[selected]} alt={`${product.nombre} ${product.marca}`} priority />
       </div>
       {allImages.length > 1 ? (
         <div className="pi-gallery-thumbs">
           {allImages.map((url, i) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <button
               key={url + i}
-              src={url}
-              alt={`${product.nombre} vista ${i + 1}`}
-              className={`pi-gallery-thumb ${i === selected ? "active" : ""}`}
+              className={`pi-gallery-thumb-box ${i === selected ? "active" : ""}`}
               onClick={() => setSelected(i)}
-            />
+              aria-label={`Ver foto ${i + 1}`}
+            >
+              <GalleryThumbImage src={url} alt={`${product.nombre} vista ${i + 1}`} />
+            </button>
           ))}
         </div>
       ) : null}
