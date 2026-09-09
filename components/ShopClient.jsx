@@ -20,6 +20,7 @@ function useFilteredProducts(products, filters) {
     if (filters.marca) list = list.filter((p) => p.marca === filters.marca);
     if (filters.categoria) list = list.filter((p) => p.categoria === filters.categoria);
     if (filters.soloOfertas) list = list.filter((p) => p.oferta || (p.precio_anterior && p.precio_anterior > p.precio));
+    if (filters.soloCombo) list = list.filter((p) => p.combo_2x409);
     if (filters.soloDisponibles) list = list.filter((p) => p.disponibilidad);
     if (filters.precioMax) list = list.filter((p) => Number(p.precio) <= Number(filters.precioMax));
 
@@ -43,7 +44,7 @@ function useFilteredProducts(products, filters) {
   }, [products, filters]);
 }
 
-const EMPTY_FILTERS = { genero: "", marca: "", categoria: "", precioMax: 0, soloOfertas: false, soloDisponibles: false, search: "", orden: "" };
+const EMPTY_FILTERS = { genero: "", marca: "", categoria: "", precioMax: 0, soloOfertas: false, soloCombo: false, soloDisponibles: false, search: "", orden: "" };
 
 export default function ShopClient({ products, brands, categories, promotions, initialFilters }) {
   const [filters, setFilters] = useState({ ...EMPTY_FILTERS, ...initialFilters });
@@ -88,6 +89,11 @@ export default function ShopClient({ products, brands, categories, promotions, i
         <button className="btn btn-ghost" onClick={() => setFilters(EMPTY_FILTERS)}>Limpiar filtros</button>
       </aside>
       <div className="pi-shop-main">
+        {filters.soloCombo ? (
+          <div className="pi-combo-banner">
+            <b>2 x $409.000</b> — agrega cualquiera 2 de estas referencias al carrito y el descuento se aplica automáticamente.
+          </div>
+        ) : null}
         <div className="pi-shop-toolbar">
           <span>{filtered.length} resultados</span>
           <select value={filters.orden} onChange={(e) => setFilters({ ...filters, orden: e.target.value })}>

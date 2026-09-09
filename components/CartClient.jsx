@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCart } from "@/lib/cart-context";
-import { formatCOP, computeFinalPrice, hasFreeShipping } from "@/lib/utils";
+import { formatCOP, computeFinalPrice, hasFreeShipping, computeComboDiscount } from "@/lib/utils";
 import { waUrl, waCartMessage } from "@/lib/whatsapp";
 import { IconWhatsapp, IconClose } from "./Icons";
 import ProductThumb from "./ProductThumb";
@@ -15,11 +15,15 @@ export default function CartClient({ products, promotions, config }) {
       const p = products.find((x) => x.id === item.id);
       if (!p) return null;
       const { price } = computeFinalPrice(p, promotions);
-      return { ...item, product: p, price, lineTotal: price * item.qty };
+      return { ...item, product: p, price, lineTotal: price * item.qty, combo: !!p.combo_2x409 };
     })
     .filter(Boolean);
 
-  const subtotal = lines.reduce((s, l) => s + l.lineTotal, 0);
+  const rawSubtotal = lines.reduce((s, l) => s + l.lineTotal, 0);
+  const { discount: comboDiscount, pairs: comboPairs } = computeComboDiscount(
+    lines.map((l) => ({ precio: l.price, qty: l.qty, combo: l.combo }))
+  );
+  const subtotal = rawSubtotal - comboDiscount;
   const free = hasFreeShipping(subtotal, config, promotions);
   const envio = subtotal === 0 ? 0 : free ? 0 : Number(config.costo_envio) || 0;
   const total = subtotal + envio;
@@ -43,7 +47,7 @@ export default function CartClient({ products, promotions, config }) {
           <div className="pi-cart-line" key={l.id}>
             <div className="pi-cart-line-media"><ProductThumb product={l.product} /></div>
             <div className="pi-cart-line-info">
-              <div className="pi-card-brand">{l.product.marca}</div>
+              <div className="pi-card-brand">{l.product.marca}{l.combo ? <span className="pi-combo-tag">2x$409.000</span> : null}</div>
               <div className="pi-card-name">{l.product.nombre}</div>
               <div className="pi-qty">
                 <button onClick={() => updateQty(l.id, Math.max(1, l.qty - 1))}>−</button>
@@ -57,14 +61,20 @@ export default function CartClient({ products, promotions, config }) {
         ))}
       </div>
       <div className="pi-cart-summary">
-        <div className="pi-summary-row"><span>Subtotal</span><span>{formatCOP(subtotal)}</span></div>
+        <div className="pi-summary-row"><span>Subtotal</span><span>{formatCOP(rawSubtotal)}</span></div>
+        {comboDiscount > 0 ? (
+          <div className="pi-summary-row pi-summary-combo">
+            <span>Descuento combo 2x$409.000 ({comboPairs} {comboPairs === 1 ? "pareja" : "parejas"})</span>
+            <span>−{formatCOP(comboDiscount)}</span>
+          </div>
+        ) : null}
         <div className="pi-summary-row"><span>Envío</span><span>{envio === 0 ? "Gratis" : formatCOP(envio)}</span></div>
         <div className="pi-summary-row total"><span>Total</span><span>{formatCOP(total)}</span></div>
         <div className="pi-cart-cta">
           <Link href="/tienda" className="btn btn-outline">Seguir comprando</Link>
           <Link href="/checkout" className="btn btn-primary">Finalizar compra</Link>
         </div>
-        <a className="btn btn-wa btn-block" href={waUrl(config.whatsapp, waCartMessage(waLines, subtotal, envio))} target="_blank" rel="noreferrer">
+        <a className="btn btn-wa btn-block" href={waUrl(config.whatsapp, waCartMessage(waLines, subtotal, envio, comboDiscount))} target="_blank" rel="noreferrer">
           <IconWhatsapp size={18} /> Realizar pedido por WhatsApp
         </a>
       </div>

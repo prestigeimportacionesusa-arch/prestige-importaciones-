@@ -19,8 +19,10 @@ export default function ProductCard({ product, promotions }) {
       <Link href={`/producto/${product.slug}`} className="pi-card-media">
         <ProductThumb product={product} />
         <div className="pi-card-badges">
+          {product.combo_2x409 ? <Badge tone="gold">2x $409.000</Badge> : null}
+          {product.destacado ? <Badge tone="gold">Destacado</Badge> : null}
           {product.nuevo ? <Badge tone="teal">Nuevo</Badge> : null}
-          {isOffer && pct > 0 ? <Badge tone="wine">-{pct}%</Badge> : null}
+          {isOffer && pct > 0 ? <Badge tone="wine">-{pct}%</Badge> : isOffer ? <Badge tone="wine">Oferta</Badge> : null}
           {!product.disponibilidad ? <Badge tone="muted">Agotado</Badge> : null}
           {product.disponibilidad && Number.isFinite(product.inventario) && product.inventario > 0 && product.inventario <= 5 ? (
             <Badge tone="wine">Últimas unidades</Badge>

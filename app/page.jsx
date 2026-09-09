@@ -15,6 +15,7 @@ export default async function HomePage() {
   const activeBanners = banners.filter((b) => b.activo);
   const destacados = products.filter((p) => p.destacado);
   const featured = (destacados.length ? destacados : products.slice(0, 8)).slice(0, 8);
+  const comboProducts = products.filter((p) => p.combo_2x409).slice(0, 8);
 
   return (
     <div>
@@ -38,6 +39,23 @@ export default async function HomePage() {
               <a href={config.tiktok} target="_blank" rel="noreferrer">🎵 TikTok</a>
             ) : null}
           </div>
+        </section>
+      ) : null}
+
+      {comboProducts.length ? (
+        <section className="pi-section pi-combo-section">
+          <div className="pi-section-title align-left">
+            <div className="pi-eyebrow">Promoción especial</div>
+            <h2>2 perfumes por $409.000</h2>
+            <Diamond />
+          </div>
+          <p className="pi-combo-lead">Elige cualquiera 2 de estas referencias — el descuento se aplica solo al agregarlas al carrito.</p>
+          <div className="pi-grid">
+            {comboProducts.map((p) => (
+              <ProductCard key={p.id} product={p} promotions={promotions} />
+            ))}
+          </div>
+          <div className="pi-center"><Link href="/tienda?combo=1" className="btn btn-outline">Ver todas las referencias del combo</Link></div>
         </section>
       ) : null}
 

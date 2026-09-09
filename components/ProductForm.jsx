@@ -6,7 +6,7 @@ export default function ProductForm({ product, brands, categories, error }) {
     nombre: "", marca: brands?.[0]?.nombre || "", genero: "Unisex", precio: 0, precio_anterior: 0,
     imagen: "", imagenes_adicionales: [], descripcion: "", familia_olfativa: "", acordes_principales: [], notas_salida: [],
     notas_corazon: [], notas_fondo: [], tamano_ml: "", categoria: "", disponibilidad: true,
-    inventario: null, orden: 0, destacado: false, nuevo: false, oferta: false,
+    inventario: null, orden: 0, destacado: false, nuevo: false, oferta: false, combo_2x409: false,
   };
 
   return (
@@ -47,6 +47,7 @@ export default function ProductForm({ product, brands, categories, error }) {
         <label className="pi-check"><input type="checkbox" name="destacado" defaultChecked={p.destacado} /> Destacado</label>
         <label className="pi-check"><input type="checkbox" name="nuevo" defaultChecked={p.nuevo} /> Nuevo</label>
         <label className="pi-check"><input type="checkbox" name="oferta" defaultChecked={p.oferta} /> Oferta</label>
+        <label className="pi-check"><input type="checkbox" name="combo_2x409" defaultChecked={p.combo_2x409} /> Incluido en 2x$409.000</label>
       </div>
       <p className="pi-config-hint">Si dejas "Inventario" vacío, no se mostrará "últimas unidades" en la tienda — solo aparece cuando pones un número real.</p>
       <button className="btn btn-primary" type="submit">Guardar</button>

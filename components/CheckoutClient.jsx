@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useCart } from "@/lib/cart-context";
 import { createClient } from "@/lib/supabase/client";
 import { getWompiCheckoutUrl } from "@/lib/actions";
-import { formatCOP, computeFinalPrice, hasFreeShipping, computeRecargo, recargoLabel, PAYMENT_METHOD_LABELS } from "@/lib/utils";
+import { formatCOP, computeFinalPrice, hasFreeShipping, computeRecargo, recargoLabel, computeComboDiscount, PAYMENT_METHOD_LABELS } from "@/lib/utils";
 import { waUrl, waOrderMessage } from "@/lib/whatsapp";
 import { trackInitiateCheckout, trackPurchase } from "@/lib/meta-pixel";
 import { IconWhatsapp } from "./Icons";
@@ -66,7 +66,7 @@ export default function CheckoutClient({ products, promotions, config }) {
       const p = products.find((x) => x.id === item.id);
       if (!p) return null;
       const { price } = computeFinalPrice(p, promotions);
-      return { id: p.id, nombre: p.nombre, marca: p.marca, qty: item.qty, precio: price, subtotal: price * item.qty };
+      return { id: p.id, nombre: p.nombre, marca: p.marca, qty: item.qty, precio: price, subtotal: price * item.qty, combo: !!p.combo_2x409 };
     })
     .filter(Boolean);
 
@@ -76,7 +76,9 @@ export default function CheckoutClient({ products, promotions, config }) {
     .map((item) => products.find((x) => x.id === item.id))
     .filter((p) => p && !p.disponibilidad);
 
-  const subtotal = lines.reduce((s, l) => s + l.subtotal, 0);
+  const rawSubtotal = lines.reduce((s, l) => s + l.subtotal, 0);
+  const { discount: comboDiscount, pairs: comboPairs } = computeComboDiscount(lines);
+  const subtotal = rawSubtotal - comboDiscount;
   const free = hasFreeShipping(subtotal, config, promotions);
   const envio = free ? 0 : Number(config.costo_envio) || 0;
   const baseTotal = subtotal + envio;
@@ -249,8 +251,11 @@ export default function CheckoutClient({ products, promotions, config }) {
       <div className="pi-checkout-summary">
         <h3>Resumen</h3>
         {lines.map((l) => (
-          <div key={l.id} className="pi-summary-row"><span>{l.nombre} x{l.qty}</span><span>{formatCOP(l.subtotal)}</span></div>
+          <div key={l.id} className="pi-summary-row"><span>{l.nombre} x{l.qty}{l.combo ? " · 2x$409.000" : ""}</span><span>{formatCOP(l.subtotal)}</span></div>
         ))}
+        {comboDiscount > 0 ? (
+          <div className="pi-summary-row pi-summary-combo"><span>Descuento combo 2x$409.000 ({comboPairs} {comboPairs === 1 ? "pareja" : "parejas"})</span><span>−{formatCOP(comboDiscount)}</span></div>
+        ) : null}
         <div className="pi-summary-row"><span>Envío</span><span>{envio === 0 ? "Gratis" : formatCOP(envio)}</span></div>
         {form.metodo_pago ? (
           <div className="pi-summary-row"><span>Recargo {PAYMENT_METHOD_LABELS[form.metodo_pago]}</span><span>{recargo === 0 ? "Sin costo" : formatCOP(recargo)}</span></div>

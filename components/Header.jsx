@@ -14,6 +14,7 @@ const NAV = [
   ["Mujer", "/tienda?genero=Mujer"],
   ["Unisex", "/tienda?genero=Unisex"],
   ["Ofertas", "/tienda?ofertas=1"],
+  ["2x $409.000", "/tienda?combo=1"],
   ["Marcas", "/marcas"],
 ];
 

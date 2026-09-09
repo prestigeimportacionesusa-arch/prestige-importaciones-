@@ -18,6 +18,7 @@ export default async function ShopPage({ searchParams }) {
     categoria: sp?.categoria || "",
     search: sp?.buscar || "",
     soloOfertas: sp?.ofertas === "1",
+    soloCombo: sp?.combo === "1",
   };
 
   return (

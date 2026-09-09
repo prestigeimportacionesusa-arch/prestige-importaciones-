@@ -42,7 +42,7 @@ create table if not exists products (
   disponibilidad boolean not null default true,
   inventario integer,
   orden integer not null default 0,
-  destacado boolean not null default false,
+  combo_2x409 boolean not null default false,
   nuevo boolean not null default false,
   oferta boolean not null default false,
   revisar boolean not null default false,
