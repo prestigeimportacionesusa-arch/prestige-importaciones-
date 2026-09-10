@@ -49,13 +49,18 @@ const EMPTY_FILTERS = { genero: "", marca: "", categoria: "", precioMax: 0, solo
 export default function ShopClient({ products, brands, categories, promotions, initialFilters }) {
   const [filters, setFilters] = useState({ ...EMPTY_FILTERS, ...initialFilters });
   const [visible, setVisible] = useState(12);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const filtered = useFilteredProducts(products, filters);
 
   useEffect(() => { setVisible(12); }, [filters]);
 
   return (
     <div className="pi-shop">
-      <aside className="pi-filters">
+      <button className="pi-filters-toggle" onClick={() => setFiltersOpen((v) => !v)}>
+        <span>Filtrar y ordenar</span>
+        <span className="pi-filters-toggle-count">{filtered.length}</span>
+      </button>
+      <aside className={`pi-filters ${filtersOpen ? "open" : ""}`}>
         <h3>Filtrar</h3>
         <div className="pi-filter-group">
           <label>Género</label>
@@ -87,6 +92,7 @@ export default function ShopClient({ products, brands, categories, promotions, i
         <label className="pi-check"><input type="checkbox" checked={filters.soloOfertas} onChange={(e) => setFilters({ ...filters, soloOfertas: e.target.checked })} /> Solo ofertas</label>
         <label className="pi-check"><input type="checkbox" checked={filters.soloDisponibles} onChange={(e) => setFilters({ ...filters, soloDisponibles: e.target.checked })} /> Solo disponibles</label>
         <button className="btn btn-ghost" onClick={() => setFilters(EMPTY_FILTERS)}>Limpiar filtros</button>
+        <button className="btn btn-primary pi-filters-apply" onClick={() => setFiltersOpen(false)}>Ver {filtered.length} resultados</button>
       </aside>
       <div className="pi-shop-main">
         {filters.soloCombo ? (

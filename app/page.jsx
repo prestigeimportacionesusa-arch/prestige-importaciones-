@@ -25,7 +25,7 @@ export default async function HomePage() {
 
       <section className="pi-benefits">
         <div className="pi-benefit"><IconShield /><div><b>100% originales</b><span>Garantía de autenticidad</span></div></div>
-        <div className="pi-benefit"><IconTruck /><div><b>Envíos a todo Colombia</b><span>{config.ciudades}</span></div></div>
+        <div className="pi-benefit"><IconTruck /><div><b>Envíos nacionales</b><span>{config.ciudades}</span></div></div>
         <div className="pi-benefit"><IconBag /><div><b>Pago contra entrega</b><span>Paga cuando lo recibes</span></div></div>
         <div className="pi-benefit"><IconCard /><div><b>Todos los medios de pago</b><span>Tarjetas, PSE, transferencia</span></div></div>
       </section>
