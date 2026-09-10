@@ -7,6 +7,8 @@ import TrackViewContent from "@/components/TrackViewContent";
 import ProductCard from "@/components/ProductCard";
 import { Diamond } from "@/components/Icons";
 
+export const revalidate = 3600; // se actualiza al instante si el admin edita algo (revalidatePath), esto es solo un techo de seguridad
+
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const product = await getProductBySlug(slug);

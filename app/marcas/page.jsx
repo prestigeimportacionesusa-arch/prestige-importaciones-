@@ -2,6 +2,8 @@ import Link from "next/link";
 import { getBrands, getProducts } from "@/lib/data";
 import { Diamond } from "@/components/Icons";
 
+export const revalidate = 3600; // se actualiza al instante si el admin edita algo (revalidatePath), esto es solo un techo de seguridad
+
 export const metadata = { title: "Marcas — Prestige Importaciones" };
 
 export default async function BrandsPage() {

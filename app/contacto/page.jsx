@@ -2,6 +2,8 @@ import { getConfig } from "@/lib/data";
 import { Diamond, IconWhatsapp } from "@/components/Icons";
 import { waUrl } from "@/lib/whatsapp";
 
+export const revalidate = 3600; // se actualiza al instante si el admin edita algo (revalidatePath), esto es solo un techo de seguridad
+
 export const metadata = { title: "Contacto — Prestige Importaciones" };
 
 export default async function ContactoPage() {

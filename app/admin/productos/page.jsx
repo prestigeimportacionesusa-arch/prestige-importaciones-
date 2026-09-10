@@ -51,24 +51,28 @@ export default async function AdminProductsPage({ searchParams }) {
               <td className="pi-flags">
                 <form action={toggleProductFlag}>
                   <input type="hidden" name="id" value={p.id} />
+                  <input type="hidden" name="slug" value={p.slug} />
                   <input type="hidden" name="field" value="destacado" />
                   <input type="hidden" name="value" value={String(p.destacado)} />
                   <button className={p.destacado ? "flag on" : "flag"} type="submit">Destacado</button>
                 </form>
                 <form action={toggleProductFlag}>
                   <input type="hidden" name="id" value={p.id} />
+                  <input type="hidden" name="slug" value={p.slug} />
                   <input type="hidden" name="field" value="nuevo" />
                   <input type="hidden" name="value" value={String(p.nuevo)} />
                   <button className={p.nuevo ? "flag on" : "flag"} type="submit">Nuevo</button>
                 </form>
                 <form action={toggleProductFlag}>
                   <input type="hidden" name="id" value={p.id} />
+                  <input type="hidden" name="slug" value={p.slug} />
                   <input type="hidden" name="field" value="oferta" />
                   <input type="hidden" name="value" value={String(p.oferta)} />
                   <button className={p.oferta ? "flag on" : "flag"} type="submit">Oferta</button>
                 </form>
                 <form action={toggleProductFlag}>
                   <input type="hidden" name="id" value={p.id} />
+                  <input type="hidden" name="slug" value={p.slug} />
                   <input type="hidden" name="field" value="disponibilidad" />
                   <input type="hidden" name="value" value={String(p.disponibilidad)} />
                   <button className={p.disponibilidad ? "flag on" : "flag"} type="submit">{p.disponibilidad ? "Disponible" : "Agotado"}</button>

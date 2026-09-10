@@ -4,6 +4,8 @@ import ProductCard from "@/components/ProductCard";
 import HeroCarousel from "@/components/HeroCarousel";
 import { Diamond, IconShield, IconTruck, IconBag, IconCard } from "@/components/Icons";
 
+export const revalidate = 3600; // se actualiza al instante si el admin edita algo (revalidatePath), esto es solo un techo de seguridad
+
 export default async function HomePage() {
   const [config, products, banners, promotions] = await Promise.all([
     getConfig(),

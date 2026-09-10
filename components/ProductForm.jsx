@@ -13,6 +13,7 @@ export default function ProductForm({ product, brands, categories, error }) {
     <form action={saveProduct} className="pi-admin-product-form">
       {error ? <div className="pi-error" style={{ marginBottom: 14 }}>{error}</div> : null}
       {p.id ? <input type="hidden" name="id" value={p.id} /> : null}
+      {p.slug ? <input type="hidden" name="slug" value={p.slug} /> : null}
       <div className="pi-form-grid">
         <input name="nombre" placeholder="Nombre" defaultValue={p.nombre} required />
         <select name="marca" defaultValue={p.marca} required>
