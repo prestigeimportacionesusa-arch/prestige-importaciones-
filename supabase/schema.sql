@@ -139,6 +139,19 @@ create table if not exists reviews (
 create index if not exists reviews_product_idx on reviews (product_id);
 
 -- ---------------------------------------------------------------------------
+-- Testimonios (capturas de conversaciones reales con clientes)
+-- ---------------------------------------------------------------------------
+
+create table if not exists testimonials (
+  id uuid primary key default gen_random_uuid(),
+  imagen text not null,
+  orden integer not null default 0,
+  activo boolean not null default true,
+  created_at timestamptz not null default now()
+);
+
+
+-- ---------------------------------------------------------------------------
 -- Configuración de la tienda (una sola fila, id = 1)
 -- ---------------------------------------------------------------------------
 
@@ -227,6 +240,10 @@ create policy "admin manage wholesale_leads" on wholesale_leads for all using (a
 create policy "public read approved reviews" on reviews for select using (aprobada = true);
 create policy "public create reviews" on reviews for insert with check (true);
 create policy "admin manage reviews" on reviews for all using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
+
+alter table testimonials enable row level security;
+create policy "public read testimonials" on testimonials for select using (activo = true);
+create policy "admin manage testimonials" on testimonials for all using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
 
 -- ============================================================================
 -- Después de correr este script:

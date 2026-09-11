@@ -375,3 +375,23 @@ img { max-width: 100%; display: block; }
   .pi-hero-has-image { min-height: 280px; }
   .pi-diamond { margin: 4px 0; }
 }
+
+/* Formulario público de reseñas */
+.pi-review-form { max-width: 480px; display:flex; flex-direction:column; gap:12px; }
+.pi-review-form h3 { font-family: var(--serif); font-size: 20px; margin:0; }
+.pi-review-form input, .pi-review-form textarea { background: var(--surface); border:1px solid var(--line); color: var(--cream); padding:10px 12px; font-family: var(--sans); }
+.pi-review-form textarea { min-height: 80px; resize: vertical; }
+.pi-review-star-picker { display:flex; gap:6px; }
+.pi-review-star-btn { background:none; border:none; font-size: 26px; color: var(--gold); cursor:pointer; padding:0; line-height:1; }
+.pi-review-thanks { background: var(--surface); border:1px solid var(--gold-deep); padding:16px; color: var(--gold); max-width: 480px; }
+
+/* Sección de testimonios en el inicio */
+.pi-testimonials-grid { display:flex; gap:14px; overflow-x:auto; padding-bottom:6px; }
+.pi-testimonial-card { flex:0 0 auto; width:220px; border:1px solid var(--line); background: var(--surface); }
+.pi-testimonial-img { width:100%; height:auto; display:block; }
+
+/* Panel admin: grilla de testimonios */
+.pi-testimonials-admin-grid { display:flex; flex-wrap:wrap; gap:16px; }
+.pi-testimonial-admin-card { width:180px; border:1px solid var(--line); background: var(--surface); }
+.pi-testimonial-admin-card img { width:100%; display:block; }
+.pi-testimonial-admin-actions { display:flex; justify-content:space-between; padding:6px; border-top:1px solid var(--line); }

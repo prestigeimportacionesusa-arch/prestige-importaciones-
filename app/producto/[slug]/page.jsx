@@ -5,6 +5,7 @@ import ProductGallery from "@/components/ProductGallery";
 import ProductActions from "@/components/ProductActions";
 import TrackViewContent from "@/components/TrackViewContent";
 import ProductCard from "@/components/ProductCard";
+import ReviewForm from "@/components/ReviewForm";
 import { Diamond } from "@/components/Icons";
 
 export const revalidate = 3600; // se actualiza al instante si el admin edita algo (revalidatePath), esto es solo un techo de seguridad
@@ -33,8 +34,9 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default async function ProductPage({ params }) {
+export default async function ProductPage({ params, searchParams }) {
   const { slug } = await params;
+  const sp = await searchParams;
   const [product, allProducts, promotions, config] = await Promise.all([
     getProductBySlug(slug),
     getProducts(),
@@ -111,6 +113,10 @@ export default async function ProductPage({ params }) {
           </div>
         </div>
       ) : null}
+
+      <div className="pi-section">
+        <ReviewForm productId={product.id} slug={product.slug} sent={sp?.reviewSent === "1"} error={sp?.reviewError === "1"} />
+      </div>
 
       {related.length ? (
         <div className="pi-section">

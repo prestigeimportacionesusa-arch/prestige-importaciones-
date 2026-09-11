@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { getConfig, getProducts, getBanners, getPromotions } from "@/lib/data";
+import Image from "next/image";
+import { getConfig, getProducts, getBanners, getPromotions, getTestimonials } from "@/lib/data";
 import ProductCard from "@/components/ProductCard";
 import HeroCarousel from "@/components/HeroCarousel";
 import { Diamond, IconShield, IconTruck, IconBag, IconCard } from "@/components/Icons";
@@ -7,11 +8,12 @@ import { Diamond, IconShield, IconTruck, IconBag, IconCard } from "@/components/
 export const revalidate = 3600; // se actualiza al instante si el admin edita algo (revalidatePath), esto es solo un techo de seguridad
 
 export default async function HomePage() {
-  const [config, products, banners, promotions] = await Promise.all([
+  const [config, products, banners, promotions, testimonials] = await Promise.all([
     getConfig(),
     getProducts(),
     getBanners(),
     getPromotions(),
+    getTestimonials(),
   ]);
 
   const activeBanners = banners.filter((b) => b.activo);
@@ -84,6 +86,23 @@ export default async function HomePage() {
         </section>
       )}
 
+
+      {testimonials.length ? (
+        <section className="pi-section pi-testimonials-section">
+          <div className="pi-section-title align-left">
+            <div className="pi-eyebrow">Clientes reales</div>
+            <h2>Lo que dicen de nosotros</h2>
+            <Diamond />
+          </div>
+          <div className="pi-testimonials-grid">
+            {testimonials.map((t) => (
+              <div key={t.id} className="pi-testimonial-card">
+                <Image src={t.imagen} alt="Testimonio de cliente" width={320} height={420} className="pi-testimonial-img" />
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <section className="pi-section pi-wholesale-cta">
         <div>

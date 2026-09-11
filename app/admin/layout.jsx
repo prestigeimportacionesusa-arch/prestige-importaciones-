@@ -11,6 +11,7 @@ const TABS = [
   ["Pedidos", "/admin/pedidos"],
   ["Mayoristas", "/admin/mayoristas"],
   ["Reseñas", "/admin/resenas"],
+  ["Testimonios", "/admin/testimonios"],
   ["Configuración", "/admin/configuracion"],
 ];
 
