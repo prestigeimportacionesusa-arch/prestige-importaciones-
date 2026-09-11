@@ -1,5 +1,5 @@
 import { saveProduct } from "@/lib/actions";
-import ProductThumb from "./ProductThumb";
+import ImageUploadField from "./ImageUploadField";
 
 export default function ProductForm({ product, brands, categories, error }) {
   const p = product || {
@@ -28,11 +28,15 @@ export default function ProductForm({ product, brands, categories, error }) {
         </select>
         <input type="number" name="precio" placeholder="Precio (obligatorio, mayor a $0)" defaultValue={p.precio} required min="1" />
         <input type="number" name="precio_anterior" placeholder="Precio anterior (si hay descuento)" defaultValue={p.precio_anterior} />
-        <div className="pi-span-2 pi-image-field">
-          <div className="pi-image-preview"><ProductThumb product={p} /></div>
-          <input name="imagen" placeholder="URL de imagen principal" defaultValue={p.imagen} />
+        <div className="pi-span-2">
+          <ImageUploadField name="imagen" label="Imagen principal" defaultValue={p.imagen} />
         </div>
-        <input name="imagenes_adicionales" placeholder="Imágenes adicionales, URLs separadas por coma" defaultValue={(p.imagenes_adicionales || []).join(", ")} className="pi-span-2" />
+        <div className="pi-span-2">
+          <ImageUploadField name="imagenes_adicionales_0" label="Imagen adicional 1 (opcional)" defaultValue={(p.imagenes_adicionales || [])[0]} />
+        </div>
+        <div className="pi-span-2">
+          <ImageUploadField name="imagenes_adicionales_1" label="Imagen adicional 2 (opcional)" defaultValue={(p.imagenes_adicionales || [])[1]} />
+        </div>
         <input name="tamano_ml" placeholder="Tamaño (ml)" defaultValue={p.tamano_ml} />
         <input name="familia_olfativa" placeholder="Familia olfativa" defaultValue={p.familia_olfativa} />
         <input type="number" name="inventario" placeholder="Inventario (unidades disponibles, opcional)" defaultValue={p.inventario ?? ""} />

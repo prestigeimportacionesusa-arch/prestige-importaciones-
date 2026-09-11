@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { saveTestimonial, toggleTestimonial, deleteTestimonial } from "@/lib/actions";
+import ImageUploadField from "@/components/ImageUploadField";
 
 export default async function AdminTestimonialsPage() {
   const supabase = await createClient();
@@ -10,12 +11,12 @@ export default async function AdminTestimonialsPage() {
       <h2>Testimonios ({testimonials?.length || 0})</h2>
       <p className="pi-config-hint">
         Sube capturas de conversaciones reales con clientes (WhatsApp, Instagram, etc.). Antes de subirlas, recorta o
-        tapa el nombre y número de teléfono del cliente por privacidad. Súbelas a postimages.org como haces con las
-        fotos de producto y pega aquí el link directo.
+        tapa el nombre y número de teléfono del cliente por privacidad. Usa el botón "Subir foto" para elegirla
+        directo de tu computador — no hace falta postimages.org ni ningún otro sitio externo.
       </p>
 
       <form action={saveTestimonial} className="pi-banner-edit" style={{ marginBottom: 24 }}>
-        <input name="imagen" placeholder="URL de la captura (postimages.org)" required />
+        <ImageUploadField name="imagen" label="Captura de conversación" />
         <input type="number" name="orden" placeholder="Orden (0 = primero)" defaultValue={0} />
         <button className="btn btn-primary" type="submit">+ Agregar testimonio</button>
       </form>

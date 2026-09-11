@@ -1,5 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Las fotos que se suben directo desde el panel (celular) suelen pesar
+  // varios MB — el límite por defecto de Next.js para Server Actions es de
+  // solo 1MB, así que lo subimos para que las subidas no fallen.
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "10mb",
+    },
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "**" },

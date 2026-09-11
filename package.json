@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed": "node scripts/seed.mjs"
+    "seed": "node scripts/seed.mjs",
+    "migrate-images": "node scripts/migrate-images-to-storage.mjs",
+    "migrate-external-images": "node scripts/migrate-external-images.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.1",
