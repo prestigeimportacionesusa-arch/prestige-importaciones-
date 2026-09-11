@@ -62,6 +62,7 @@ create table if not exists banners (
   cta text not null default 'Comprar ahora',
   promo_badge text default '',
   imagen text default '',
+  mostrar_boton boolean not null default true,
   tono text not null default 'gold',
   orden integer not null default 0
 );

@@ -11,14 +11,18 @@ export default async function AdminBannersPage() {
       <div className="pi-admin-toolbar">
         <h2>Banners</h2>
       </div>
+      <p className="pi-config-hint">
+        Sube la imagen completa del banner (se muestra a su tamaño real, sin recortar). El título es solo para
+        identificarlo internamente y para accesibilidad — no aparece sobre la imagen. Puedes elegir si mostrar el
+        botón "Comprar ahora" encima o dejar la imagen 100% limpia.
+      </p>
 
       <form action={saveBanner} className="pi-banner-edit" style={{ marginBottom: 20 }}>
         <label className="pi-check"><input type="checkbox" name="activo" defaultChecked /> Activo</label>
-        <input name="titulo" placeholder="Título" required />
-        <input name="subtitulo" placeholder="Subtítulo" />
+        <input name="titulo" placeholder="Título (solo interno / accesibilidad)" required />
+        <ImageUploadField name="imagen" label="Imagen del banner (tamaño real, sin recortar)" />
+        <label className="pi-check"><input type="checkbox" name="mostrar_boton" defaultChecked /> Mostrar botón "Comprar ahora" encima</label>
         <input name="cta" placeholder="Texto del botón" defaultValue="Comprar ahora" />
-        <input name="promo_badge" placeholder='Etiqueta de promoción (ej: "$35.000 de descuento en todos los perfumes") — opcional' />
-        <ImageUploadField name="imagen" label="Imagen de fondo (opcional)" />
         <button className="btn btn-primary" type="submit">+ Nuevo banner</button>
       </form>
 
@@ -26,11 +30,10 @@ export default async function AdminBannersPage() {
         <form action={saveBanner} className="pi-banner-edit" key={b.id}>
           <input type="hidden" name="id" value={b.id} />
           <label className="pi-check"><input type="checkbox" name="activo" defaultChecked={b.activo} /> Activo</label>
-          <input name="titulo" placeholder="Título" defaultValue={b.titulo} />
-          <input name="subtitulo" placeholder="Subtítulo" defaultValue={b.subtitulo} />
+          <input name="titulo" placeholder="Título (solo interno / accesibilidad)" defaultValue={b.titulo} />
+          <ImageUploadField name="imagen" label="Imagen del banner (tamaño real, sin recortar)" defaultValue={b.imagen} />
+          <label className="pi-check"><input type="checkbox" name="mostrar_boton" defaultChecked={b.mostrar_boton !== false} /> Mostrar botón "Comprar ahora" encima</label>
           <input name="cta" placeholder="Texto del botón" defaultValue={b.cta} />
-          <input name="promo_badge" placeholder="Etiqueta de promoción (opcional)" defaultValue={b.promo_badge} />
-          <ImageUploadField name="imagen" label="Imagen de fondo (opcional)" defaultValue={b.imagen} />
           <div style={{ display: "flex", gap: 8 }}>
             <button className="btn btn-primary btn-sm" type="submit">Guardar</button>
             <button

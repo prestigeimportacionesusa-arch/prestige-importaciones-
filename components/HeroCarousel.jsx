@@ -2,14 +2,15 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Diamond } from "./Icons";
 
 const FALLBACK_BANNER = {
   titulo: "PERFUMES 100% ORIGINALES",
   subtitulo: "Encuentra tu próxima fragancia favorita",
   cta: "Comprar ahora",
-  promo_badge: "",
   imagen: "",
+  mostrar_boton: true,
 };
 
 function BottleSilhouettes() {
@@ -42,20 +43,41 @@ export default function HeroCarousel({ banners }) {
   }, [slides.length]);
 
   const banner = slides[index];
+  const hasImage = !!banner.imagen;
 
   return (
-    <section
-      className={`pi-hero ${banner.imagen ? "pi-hero-has-image" : ""}`}
-      style={banner.imagen ? { backgroundImage: `url(${banner.imagen})` } : undefined}
-    >
-      {!banner.imagen ? <BottleSilhouettes /> : null}
-      <div className="pi-hero-text">
-        {banner.promo_badge ? <span className="pi-hero-badge">{banner.promo_badge}</span> : null}
-        <Diamond />
-        <h1>{banner.titulo}</h1>
-        <p>{banner.subtitulo}</p>
-        <Link href="/tienda" className="btn btn-primary btn-lg">{banner.cta || "Comprar ahora"}</Link>
-      </div>
+    <section className="pi-hero">
+      {hasImage ? (
+        <div className="pi-hero-image-wrap">
+          <Image
+            src={banner.imagen}
+            alt={banner.titulo || "Promoción"}
+            width={1600}
+            height={900}
+            sizes="100vw"
+            className="pi-hero-image"
+            priority={index === 0}
+            quality={78}
+          />
+          {banner.mostrar_boton ? (
+            <div className="pi-hero-image-cta">
+              <Link href="/tienda" className="btn btn-primary btn-lg">{banner.cta || "Comprar ahora"}</Link>
+            </div>
+          ) : null}
+        </div>
+      ) : (
+        <div className="pi-hero-fallback">
+          <BottleSilhouettes />
+          <div className="pi-hero-text">
+            <Diamond />
+            <h1>{banner.titulo}</h1>
+            <p>{banner.subtitulo}</p>
+            {banner.mostrar_boton !== false ? (
+              <Link href="/tienda" className="btn btn-primary btn-lg">{banner.cta || "Comprar ahora"}</Link>
+            ) : null}
+          </div>
+        </div>
+      )}
       {slides.length > 1 ? (
         <div className="pi-hero-dots">
           {slides.map((_, i) => (
