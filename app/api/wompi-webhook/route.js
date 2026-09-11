@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { verifyWompiEventChecksum, wompiStatusToEstadoPago } from "@/lib/wompi";
 import { createServiceClient } from "@/lib/supabase/service";
 import { sendPurchaseCapiEvent } from "@/lib/meta-capi";
+import { notifyPaymentUpdate } from "@/lib/email";
 
 // Esta es la URL que se configura en el dashboard de Wompi (Desarrollo ->
 // Programadores -> URL de eventos). Wompi envía aquí un POST cada vez que
@@ -64,6 +65,10 @@ export async function POST(request) {
       items: order.order_items || [],
     });
   }
+
+  // Te avisamos por correo tanto si el pago se aprobó como si se rechazó,
+  // para que sepas de inmediato si ya puedes alistar el pedido.
+  await notifyPaymentUpdate(order, nuevoEstadoPago).catch(() => {});
 
   return NextResponse.json({ ok: true });
 }

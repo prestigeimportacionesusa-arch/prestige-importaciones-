@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useCart } from "@/lib/cart-context";
 import { createClient } from "@/lib/supabase/client";
-import { getWompiCheckoutUrl } from "@/lib/actions";
+import { getWompiCheckoutUrl, notifyOrderCreated } from "@/lib/actions";
 import { formatCOP, computeFinalPrice, hasFreeShipping, computeRecargo, recargoLabel, computeComboDiscount, PAYMENT_METHOD_LABELS } from "@/lib/utils";
 import { waUrl, waOrderMessage } from "@/lib/whatsapp";
 import { trackInitiateCheckout, trackPurchase } from "@/lib/meta-pixel";
@@ -167,6 +167,10 @@ export default function CheckoutClient({ products, promotions, config }) {
       setErrorMsg("No pudimos registrar tu pedido. Intenta de nuevo o escríbenos por WhatsApp.");
       return;
     }
+
+    // No bloqueamos ni afectamos la compra del cliente si el correo de
+    // notificación falla por cualquier motivo — es informativo, no crítico.
+    notifyOrderCreated(orderId).catch(() => {});
 
     const itemRows = lines.map((l) => ({
       order_id: orderId,
