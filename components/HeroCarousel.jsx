@@ -38,12 +38,14 @@ export default function HeroCarousel({ banners }) {
     if (slides.length < 2) return;
     const timer = setInterval(() => {
       setIndex((i) => (i + 1) % slides.length);
-    }, 6000);
+    }, 20000);
     return () => clearInterval(timer);
   }, [slides.length]);
 
   const banner = slides[index];
   const hasImage = !!banner.imagen;
+  const goPrev = () => setIndex((i) => (i - 1 + slides.length) % slides.length);
+  const goNext = () => setIndex((i) => (i + 1) % slides.length);
 
   return (
     <section className="pi-hero">
@@ -79,16 +81,14 @@ export default function HeroCarousel({ banners }) {
         </div>
       )}
       {slides.length > 1 ? (
-        <div className="pi-hero-dots">
-          {slides.map((_, i) => (
-            <button
-              key={i}
-              className={`pi-hero-dot ${i === index ? "active" : ""}`}
-              onClick={() => setIndex(i)}
-              aria-label={`Ver banner ${i + 1}`}
-            />
-          ))}
-        </div>
+        <>
+          <button className="pi-hero-arrow pi-hero-arrow-prev" onClick={goPrev} aria-label="Banner anterior">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6" /></svg>
+          </button>
+          <button className="pi-hero-arrow pi-hero-arrow-next" onClick={goNext} aria-label="Siguiente banner">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6" /></svg>
+          </button>
+        </>
       ) : null}
     </section>
   );

@@ -348,9 +348,11 @@ img { max-width: 100%; display: block; }
 .pi-social-banner-links a:hover { border-color: var(--gold); color: var(--gold); }
 
 /* Puntos del carrusel de banners */
-.pi-hero-dots { position:absolute; z-index:2; bottom:16px; left:50%; transform:translateX(-50%); display:flex; gap:8px; }
-.pi-hero-dot { width:8px; height:8px; border-radius:50%; background: rgba(243,238,227,0.35); border:none; padding:0; cursor:pointer; transition: background .2s, transform .2s; }
-.pi-hero-dot.active { background: var(--gold); transform: scale(1.3); }
+.pi-hero-arrow { position:absolute; top:50%; transform:translateY(-50%); z-index:3; width:44px; height:44px; border-radius:50%; background: rgba(11,11,13,0.55); border:1px solid rgba(243,238,227,0.3); color: var(--cream); display:flex; align-items:center; justify-content:center; cursor:pointer; transition: background .2s, border-color .2s; }
+.pi-hero-arrow:hover { background: rgba(11,11,13,0.8); border-color: var(--gold); color: var(--gold); }
+.pi-hero-arrow-prev { left:12px; }
+.pi-hero-arrow-next { right:12px; }
+
 
 /* Promoción 2x$409.000 */
 .pi-combo-banner { background: var(--surface); border: 1px solid var(--gold-deep); padding: 12px 16px; margin-bottom: 16px; font-size: 13px; color: var(--muted); }
