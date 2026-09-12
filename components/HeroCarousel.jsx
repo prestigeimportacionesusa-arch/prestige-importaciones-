@@ -38,7 +38,7 @@ export default function HeroCarousel({ banners }) {
     if (slides.length < 2) return;
     const timer = setInterval(() => {
       setIndex((i) => (i + 1) % slides.length);
-    }, 20000);
+    }, 5000);
     return () => clearInterval(timer);
   }, [slides.length]);
 
