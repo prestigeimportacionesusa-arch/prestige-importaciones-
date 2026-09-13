@@ -134,6 +134,7 @@ create table if not exists reviews (
   nombre text not null,
   estrellas integer not null check (estrellas between 1 and 5),
   comentario text default '',
+  foto text,
   aprobada boolean not null default false,
   created_at timestamptz not null default now()
 );

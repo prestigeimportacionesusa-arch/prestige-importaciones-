@@ -108,6 +108,10 @@ export default async function ProductPage({ params, searchParams }) {
                 <div className="pi-review-stars">{"★".repeat(r.estrellas)}{"☆".repeat(5 - r.estrellas)}</div>
                 <div className="pi-review-author">{r.nombre}</div>
                 <p>{r.comentario}</p>
+                {r.foto ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={r.foto} alt={`Foto de ${r.nombre}`} className="pi-review-photo" />
+                ) : null}
               </div>
             ))}
           </div>

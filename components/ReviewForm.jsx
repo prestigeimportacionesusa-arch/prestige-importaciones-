@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { submitReview } from "@/lib/actions";
+import ImageUploadField from "./ImageUploadField";
 
 export default function ReviewForm({ productId, slug, sent, error }) {
   const [stars, setStars] = useState(5);
@@ -39,6 +40,7 @@ export default function ReviewForm({ productId, slug, sent, error }) {
       </div>
       <input name="nombre" placeholder="Tu nombre" required />
       <textarea name="comentario" placeholder="Cuéntanos tu experiencia (opcional)" />
+      <ImageUploadField name="foto" label="Foto del producto que recibiste (opcional)" />
       <button className="btn btn-outline" type="submit">Enviar reseña</button>
     </form>
   );

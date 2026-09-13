@@ -12,7 +12,7 @@ export default async function AdminReviewsPage() {
     <div>
       <h2>Reseñas ({reviews?.length || 0})</h2>
       <table className="pi-admin-table">
-        <thead><tr><th>Producto</th><th>Cliente</th><th>Estrellas</th><th>Comentario</th><th>Estado</th><th></th></tr></thead>
+        <thead><tr><th>Producto</th><th>Cliente</th><th>Estrellas</th><th>Comentario</th><th>Foto</th><th>Estado</th><th></th></tr></thead>
         <tbody>
           {(reviews || []).map((r) => (
             <tr key={r.id}>
@@ -20,6 +20,12 @@ export default async function AdminReviewsPage() {
               <td>{r.nombre}</td>
               <td>{"★".repeat(r.estrellas)}</td>
               <td>{r.comentario}</td>
+              <td>
+                {r.foto ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <a href={r.foto} target="_blank" rel="noreferrer"><img src={r.foto} alt="" className="pi-review-photo-admin" /></a>
+                ) : "—"}
+              </td>
               <td>{r.aprobada ? "Aprobada" : "Pendiente"}</td>
               <td>
                 <form action={toggleReviewApproval} style={{ display: "inline" }}>
@@ -34,7 +40,7 @@ export default async function AdminReviewsPage() {
               </td>
             </tr>
           ))}
-          {!reviews?.length ? <tr><td colSpan="6" className="pi-empty">Aún no hay reseñas.</td></tr> : null}
+          {!reviews?.length ? <tr><td colSpan="7" className="pi-empty">Aún no hay reseñas.</td></tr> : null}
         </tbody>
       </table>
     </div>
