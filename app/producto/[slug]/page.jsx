@@ -46,7 +46,7 @@ export default async function ProductPage({ params, searchParams }) {
 
   if (!product) notFound();
 
-  const reviews = await getApprovedReviews(product.id);
+  const reviews = await getApprovedReviews(product.marca);
   const { price, original, isOffer } = computeFinalPrice(product, promotions);
   const related = allProducts
     .filter((p) => p.id !== product.id && (p.marca === product.marca || p.genero === product.genero))
@@ -101,16 +101,20 @@ export default async function ProductPage({ params, searchParams }) {
 
       {reviews.length ? (
         <div className="pi-section">
-          <div className="pi-section-title align-left"><h2>Reseñas de clientes</h2><Diamond /></div>
+          <div className="pi-section-title align-left"><h2>Reseñas de {product.marca}</h2><Diamond /></div>
           <div className="pi-reviews-list">
             {reviews.map((r) => (
               <div key={r.id} className="pi-review">
                 <div className="pi-review-stars">{"★".repeat(r.estrellas)}{"☆".repeat(5 - r.estrellas)}</div>
-                <div className="pi-review-author">{r.nombre}</div>
+                <div className="pi-review-author">{r.nombre} <span className="pi-review-product-tag">· {r.products?.nombre || product.nombre}</span></div>
                 <p>{r.comentario}</p>
-                {r.foto ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={r.foto} alt={`Foto de ${r.nombre}`} className="pi-review-photo" />
+                {r.fotos?.length ? (
+                  <div className="pi-review-photos-list">
+                    {r.fotos.map((url) => (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img key={url} src={url} alt={`Foto de ${r.nombre}`} className="pi-review-photo" />
+                    ))}
+                  </div>
                 ) : null}
               </div>
             ))}
@@ -119,7 +123,7 @@ export default async function ProductPage({ params, searchParams }) {
       ) : null}
 
       <div className="pi-section">
-        <ReviewForm productId={product.id} slug={product.slug} sent={sp?.reviewSent === "1"} error={sp?.reviewError === "1"} />
+        <ReviewForm productId={product.id} marca={product.marca} slug={product.slug} sent={sp?.reviewSent === "1"} error={sp?.reviewError === "1"} />
       </div>
 
       {related.length ? (

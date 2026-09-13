@@ -135,10 +135,13 @@ create table if not exists reviews (
   estrellas integer not null check (estrellas between 1 and 5),
   comentario text default '',
   foto text,
+  fotos text[] default '{}',
+  marca text,
   aprobada boolean not null default false,
   created_at timestamptz not null default now()
 );
 create index if not exists reviews_product_idx on reviews (product_id);
+create index if not exists reviews_marca_idx on reviews (marca);
 
 -- ---------------------------------------------------------------------------
 -- Testimonios (capturas de conversaciones reales con clientes)

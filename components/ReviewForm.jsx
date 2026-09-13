@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { submitReview } from "@/lib/actions";
-import ImageUploadField from "./ImageUploadField";
+import ReviewPhotosField from "./ReviewPhotosField";
 
-export default function ReviewForm({ productId, slug, sent, error }) {
+export default function ReviewForm({ productId, marca, slug, sent, error }) {
   const [stars, setStars] = useState(5);
   const [hover, setHover] = useState(0);
 
@@ -19,6 +19,7 @@ export default function ReviewForm({ productId, slug, sent, error }) {
   return (
     <form action={submitReview} className="pi-review-form">
       <input type="hidden" name="product_id" value={productId} />
+      <input type="hidden" name="marca" value={marca} />
       <input type="hidden" name="slug" value={slug} />
       <input type="hidden" name="estrellas" value={stars} />
       <h3>Deja tu reseña</h3>
@@ -40,7 +41,7 @@ export default function ReviewForm({ productId, slug, sent, error }) {
       </div>
       <input name="nombre" placeholder="Tu nombre" required />
       <textarea name="comentario" placeholder="Cuéntanos tu experiencia (opcional)" />
-      <ImageUploadField name="foto" label="Foto del producto que recibiste (opcional)" />
+      <ReviewPhotosField />
       <button className="btn btn-outline" type="submit">Enviar reseña</button>
     </form>
   );
