@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { signOut } from "@/lib/actions";
+import { createClient } from "@/lib/supabase/server";
 
 const TABS = [
   ["Dashboard", "/admin"],
@@ -15,13 +16,42 @@ const TABS = [
   ["Configuración", "/admin/configuracion"],
 ];
 
-export default function AdminLayout({ children }) {
+async function getAdminBadgeCounts() {
+  try {
+    const supabase = await createClient();
+
+    const [{ count: pedidosNuevos }, { count: resenasPendientes }, { data: productosCheck }] = await Promise.all([
+      supabase.from("orders").select("id", { count: "exact", head: true }).eq("estado", "Nuevo"),
+      supabase.from("reviews").select("id", { count: "exact", head: true }).eq("aprobada", false),
+      supabase.from("products").select("revisar, precio, imagen"),
+    ]);
+
+    const productosRevisar = (productosCheck || []).filter(
+      (p) => p.revisar || !p.precio || Number(p.precio) <= 0 || !p.imagen
+    ).length;
+
+    return {
+      "/admin/pedidos": pedidosNuevos || 0,
+      "/admin/resenas": resenasPendientes || 0,
+      "/admin/productos": productosRevisar,
+    };
+  } catch {
+    return {};
+  }
+}
+
+export default async function AdminLayout({ children }) {
+  const badges = await getAdminBadgeCounts();
+
   return (
     <div className="pi-admin">
       <div className="pi-admin-sidebar">
         <div className="pi-logo-text">Admin</div>
         {TABS.map(([label, href]) => (
-          <Link key={label} href={href} className="pi-admin-tab">{label}</Link>
+          <Link key={label} href={href} className="pi-admin-tab">
+            {label}
+            {badges[href] ? <span className="pi-admin-badge">{badges[href]}</span> : null}
+          </Link>
         ))}
         <form action={signOut}>
           <button className="pi-admin-tab pi-admin-exit" type="submit">Cerrar sesión</button>
