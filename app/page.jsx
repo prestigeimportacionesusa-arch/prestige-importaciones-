@@ -30,6 +30,9 @@ export default async function HomePage() {
         <div className="pi-benefit"><IconTruck /><div><b>Envíos nacionales</b><span>{config.ciudades}</span></div></div>
         <div className="pi-benefit"><IconBag /><div><b>Pago contra entrega</b><span>Paga cuando lo recibes</span></div></div>
         <div className="pi-benefit"><IconCard /><div><b>Todos los medios de pago</b><span>Tarjetas, PSE, transferencia</span></div></div>
+        {config.metodos_pago?.addi ? (
+          <div className="pi-benefit"><IconCard /><div><b>Paga con Addi</b><span>Hasta 3 cuotas sin interés</span></div></div>
+        ) : null}
       </section>
 
       {(config.instagram || config.tiktok) ? (

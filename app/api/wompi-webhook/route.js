@@ -3,6 +3,8 @@ import { verifyWompiEventChecksum, wompiStatusToEstadoPago } from "@/lib/wompi";
 import { createServiceClient } from "@/lib/supabase/service";
 import { sendPurchaseCapiEvent } from "@/lib/meta-capi";
 import { notifyPaymentUpdate } from "@/lib/email";
+import { sendWhatsAppToAdmin } from "@/lib/whatsapp-notify";
+import { formatCOP } from "@/lib/utils";
 
 // Esta es la URL que se configura en el dashboard de Wompi (Desarrollo ->
 // Programadores -> URL de eventos). Wompi envía aquí un POST cada vez que
@@ -66,9 +68,13 @@ export async function POST(request) {
     });
   }
 
-  // Te avisamos por correo tanto si el pago se aprobó como si se rechazó,
-  // para que sepas de inmediato si ya puedes alistar el pedido.
+  // Te avisamos por correo y WhatsApp tanto si el pago se aprobó como si se
+  // rechazó, para que sepas de inmediato si ya puedes alistar el pedido.
   await notifyPaymentUpdate(order, nuevoEstadoPago).catch(() => {});
+  const aprobado = nuevoEstadoPago === "Pagado";
+  await sendWhatsAppToAdmin(
+    `${aprobado ? "✅" : "❌"} *Pedido #${order.numero}* — ${aprobado ? "Pago confirmado" : "Pago rechazado"} — ${formatCOP(order.total)}`
+  ).catch(() => {});
 
   return NextResponse.json({ ok: true });
 }

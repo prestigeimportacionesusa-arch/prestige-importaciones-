@@ -296,7 +296,7 @@ img { max-width: 100%; display: block; }
         .pi-hero-bottle-1 { width:280px; height:280px; right:-50px; top:-50px; opacity:0.16; }
         .pi-hero-bottle-2 { width:190px; height:190px; right:140px; bottom:-40px; opacity:0.1; }
         .pi-grid { grid-template-columns: repeat(3,1fr); }
-        .pi-benefits { grid-template-columns: repeat(4,1fr); }
+        .pi-benefits { grid-template-columns: repeat(5,1fr); }
         .pi-product-top { grid-template-columns: 380px 1fr; }
         .pi-cart-page, .pi-checkout-form { max-width: 720px; }
         .pi-checkout { grid-template-columns: 1.4fr 1fr; display:grid; align-items:start; }
