@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { formatCOP } from "@/lib/utils";
+import { formatCOP, formatOrderNumber } from "@/lib/utils";
 import { updateOrderStatus, updateOrderPaymentStatus } from "@/lib/actions";
 
 const ESTADOS = ["Nuevo", "Confirmado", "Preparando", "Enviado", "Entregado", "Cancelado"];
@@ -17,7 +17,7 @@ export default async function AdminOrdersPage() {
         <tbody>
           {(orders || []).map((o) => (
             <tr key={o.id}>
-              <td>{o.numero}</td>
+              <td>#{formatOrderNumber(o.numero)}</td>
               <td>{new Date(o.fecha).toLocaleDateString("es-CO")}</td>
               <td>{o.cliente_nombre}{o.cliente_cedula ? <div style={{ fontSize: 11, color: "var(--muted)" }}>CC {o.cliente_cedula}</div> : null}</td>
               <td>{o.cliente_celular}</td>

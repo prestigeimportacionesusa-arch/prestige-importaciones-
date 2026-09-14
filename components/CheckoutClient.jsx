@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useCart } from "@/lib/cart-context";
 import { createClient } from "@/lib/supabase/client";
 import { getWompiCheckoutUrl, notifyOrderCreated } from "@/lib/actions";
-import { formatCOP, computeFinalPrice, hasFreeShipping, computeRecargo, recargoLabel, computeComboDiscount, PAYMENT_METHOD_LABELS } from "@/lib/utils";
+import { formatCOP, formatOrderNumber, computeFinalPrice, hasFreeShipping, computeRecargo, recargoLabel, computeComboDiscount, PAYMENT_METHOD_LABELS } from "@/lib/utils";
 import { waUrl, waOrderMessage } from "@/lib/whatsapp";
 import { trackInitiateCheckout, trackPurchase } from "@/lib/meta-pixel";
 import { IconWhatsapp } from "./Icons";
@@ -77,7 +77,7 @@ function TransferDetails({ config }) {
 
 export default function CheckoutClient({ products, promotions, config }) {
   const { cart, clearCart } = useCart();
-  const [form, setForm] = useState({ nombre: "", cedula: "", celular: "", correo: "", direccion: "", ciudad: "", departamento: "", barrio: "", info_adicional: "", metodo_pago: "" });
+  const [form, setForm] = useState({ nombre: "", cedula: "", celular: "", direccion: "", ciudad: "", departamento: "", barrio: "", info_adicional: "", metodo_pago: "" });
   const [addiData, setAddiData] = useState({ nombre: "", cedula: "", celular: "" });
   const [orderResult, setOrderResult] = useState(null);
 
@@ -135,7 +135,7 @@ export default function CheckoutClient({ products, promotions, config }) {
     return (
       <div className="pi-order-confirm">
         <h1>¡Gracias, {orderResult.cliente_nombre.split(" ")[0]}!</h1>
-        <p>Tu pedido <b>#{orderResult.numero}</b> fue registrado por {formatCOP(orderResult.total)}.</p>
+        <p>Tu pedido <b>#{formatOrderNumber(orderResult.numero)}</b> fue registrado por {formatCOP(orderResult.total)}.</p>
         <p className="pi-order-status-note">
           Estado del pago: <b>{orderResult.estado_pago}</b>
           {orderResult.metodo_pago === PAYMENT_METHOD_LABELS.transferencia ? " — confírmalo enviando tu comprobante por WhatsApp." : ""}
@@ -180,7 +180,6 @@ export default function CheckoutClient({ products, promotions, config }) {
 
     const supabase = createClient();
     const orderId = crypto.randomUUID();
-    const numero = Math.floor(1000 + Math.random() * 9000);
     const metodoLabel = PAYMENT_METHOD_LABELS[form.metodo_pago] || form.metodo_pago;
     // Ningún método marca el pedido como pagado automáticamente en este
     // momento: contraentrega se paga al recibir, transferencia se confirma
@@ -189,16 +188,18 @@ export default function CheckoutClient({ products, promotions, config }) {
     const estado_pago = "Pendiente";
     const esWompi = form.metodo_pago === "tarjeta" || form.metodo_pago === "pse";
 
-    const { error: orderError } = await supabase.from("orders").insert({
+    // "numero" no se manda desde aquí — lo asigna la base de datos sola, de
+    // forma secuencial (100, 101, 102...), para que nunca se repita ni
+    // salga desordenado aunque lleguen varios pedidos al mismo tiempo.
+    const { data: insertedOrder, error: orderError } = await supabase.from("orders").insert({
       id: orderId,
-      numero,
       estado: "Nuevo",
       estado_pago,
       referencia: orderId,
       cliente_nombre: form.nombre,
       cliente_cedula: form.cedula,
       cliente_celular: form.celular,
-      cliente_correo: form.correo,
+      cliente_correo: "",
       cliente_direccion: form.direccion,
       cliente_ciudad: form.ciudad,
       cliente_departamento: form.departamento,
@@ -212,7 +213,8 @@ export default function CheckoutClient({ products, promotions, config }) {
       addi_nombre: form.metodo_pago === "addi" ? addiData.nombre : null,
       addi_cedula: form.metodo_pago === "addi" ? addiData.cedula : null,
       addi_celular: form.metodo_pago === "addi" ? addiData.celular : null,
-    });
+    }).select("numero").single();
+    const numero = insertedOrder?.numero;
 
     if (orderError) {
       setSubmitting(false);
@@ -291,7 +293,6 @@ export default function CheckoutClient({ products, promotions, config }) {
             onChange={(e) => setForm({ ...form, cedula: e.target.value })}
           />
           <input required placeholder="Número de celular" value={form.celular} onChange={(e) => setForm({ ...form, celular: e.target.value })} />
-          <input required type="email" placeholder="Correo electrónico" value={form.correo} onChange={(e) => setForm({ ...form, correo: e.target.value })} />
           <input required placeholder="Ciudad" value={form.ciudad} onChange={(e) => setForm({ ...form, ciudad: e.target.value })} />
           <input required placeholder="Departamento" value={form.departamento} onChange={(e) => setForm({ ...form, departamento: e.target.value })} />
           <input placeholder="Barrio" value={form.barrio} onChange={(e) => setForm({ ...form, barrio: e.target.value })} />

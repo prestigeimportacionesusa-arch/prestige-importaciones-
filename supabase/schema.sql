@@ -81,9 +81,10 @@ create table if not exists promotions (
 -- Pedidos
 -- ---------------------------------------------------------------------------
 
+create sequence if not exists orders_numero_seq start 100;
 create table if not exists orders (
   id uuid primary key default gen_random_uuid(),
-  numero integer not null,
+  numero integer not null default nextval('orders_numero_seq'),
   fecha timestamptz not null default now(),
   estado text not null default 'Nuevo'
     check (estado in ('Nuevo','Confirmado','Preparando','Enviado','Entregado','Cancelado')),

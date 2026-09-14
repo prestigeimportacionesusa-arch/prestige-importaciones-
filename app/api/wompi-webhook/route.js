@@ -4,7 +4,7 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { sendPurchaseCapiEvent } from "@/lib/meta-capi";
 import { notifyPaymentUpdate } from "@/lib/email";
 import { sendWhatsAppToAdmin } from "@/lib/whatsapp-notify";
-import { formatCOP } from "@/lib/utils";
+import { formatCOP, formatOrderNumber } from "@/lib/utils";
 
 // Esta es la URL que se configura en el dashboard de Wompi (Desarrollo ->
 // Programadores -> URL de eventos). Wompi envía aquí un POST cada vez que
@@ -73,7 +73,7 @@ export async function POST(request) {
   await notifyPaymentUpdate(order, nuevoEstadoPago).catch(() => {});
   const aprobado = nuevoEstadoPago === "Pagado";
   await sendWhatsAppToAdmin(
-    `${aprobado ? "✅" : "❌"} *Pedido #${order.numero}* — ${aprobado ? "Pago confirmado" : "Pago rechazado"} — ${formatCOP(order.total)}`
+    `${aprobado ? "✅" : "❌"} *Pedido #${formatOrderNumber(order.numero)}* — ${aprobado ? "Pago confirmado" : "Pago rechazado"} — ${formatCOP(order.total)}`
   ).catch(() => {});
 
   return NextResponse.json({ ok: true });
