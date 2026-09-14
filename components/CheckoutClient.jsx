@@ -10,14 +10,36 @@ import { waUrl, waOrderMessage } from "@/lib/whatsapp";
 import { trackInitiateCheckout, trackPurchase } from "@/lib/meta-pixel";
 import { IconWhatsapp } from "./Icons";
 
-function AddiDetails() {
+function AddiDetails({ addiData, onChange }) {
   return (
     <div className="pi-transfer-box">
-      <p><b>Compra a cuotas con Addi:</b></p>
+      <p><b>Datos de quien paga con Addi</b></p>
       <p className="pi-transfer-note" style={{ marginTop: 0 }}>
-        Al confirmar tu pedido, te vamos a enviar tu link de pago de Addi por WhatsApp para que completes la
-        aprobación y elijas tus cuotas. Tu pedido queda apartado mientras tanto.
+        Estos datos son de la persona que <b>tiene el cupo Addi y va a realizar el pago</b> — puede ser distinta a
+        quien recibe el pedido (los datos de envío ya los diste arriba). Con esto generamos el link de pago y te lo
+        enviamos por WhatsApp al celular de quien paga.
       </p>
+      <div className="pi-form-grid" style={{ marginTop: 10 }}>
+        <input
+          placeholder="Nombre completo de quien PAGA con Addi"
+          value={addiData.nombre}
+          onChange={(e) => onChange({ ...addiData, nombre: e.target.value })}
+          required
+          className="pi-span-2"
+        />
+        <input
+          placeholder="Cédula de quien PAGA con Addi"
+          value={addiData.cedula}
+          onChange={(e) => onChange({ ...addiData, cedula: e.target.value })}
+          required
+        />
+        <input
+          placeholder="Celular de quien PAGA con Addi"
+          value={addiData.celular}
+          onChange={(e) => onChange({ ...addiData, celular: e.target.value })}
+          required
+        />
+      </div>
     </div>
   );
 }
@@ -55,7 +77,8 @@ function TransferDetails({ config }) {
 
 export default function CheckoutClient({ products, promotions, config }) {
   const { cart, clearCart } = useCart();
-  const [form, setForm] = useState({ nombre: "", celular: "", correo: "", direccion: "", ciudad: "", departamento: "", barrio: "", info_adicional: "", metodo_pago: "" });
+  const [form, setForm] = useState({ nombre: "", cedula: "", celular: "", correo: "", direccion: "", ciudad: "", departamento: "", barrio: "", info_adicional: "", metodo_pago: "" });
+  const [addiData, setAddiData] = useState({ nombre: "", cedula: "", celular: "" });
   const [orderResult, setOrderResult] = useState(null);
 
   // Se dispara Purchase solo para contraentrega/transferencia (aquí no hay
@@ -119,7 +142,14 @@ export default function CheckoutClient({ products, promotions, config }) {
           {orderResult.metodo_pago === PAYMENT_METHOD_LABELS.addi ? " — te enviaremos tu link de pago Addi por WhatsApp." : ""}
         </p>
         {orderResult.metodo_pago === PAYMENT_METHOD_LABELS.transferencia ? <TransferDetails config={config} /> : null}
-        {orderResult.metodo_pago === PAYMENT_METHOD_LABELS.addi ? <AddiDetails /> : null}
+        {orderResult.metodo_pago === PAYMENT_METHOD_LABELS.addi ? (
+          <div className="pi-transfer-box">
+            <p><b>Datos enviados para tu link de pago Addi:</b></p>
+            <p className="pi-transfer-note" style={{ marginTop: 0 }}>
+              {orderResult.addi_nombre} · CC {orderResult.addi_cedula} · {orderResult.addi_celular}
+            </p>
+          </div>
+        ) : null}
         <a className="btn btn-wa" href={waUrl(config.whatsapp, waOrderMessage(orderResult))} target="_blank" rel="noreferrer">
           <IconWhatsapp size={18} /> Confirmar por WhatsApp
         </a>
@@ -141,6 +171,10 @@ export default function CheckoutClient({ products, promotions, config }) {
     e.preventDefault();
     if (agotados.length) { setErrorMsg("Uno o más productos de tu carrito se agotaron. Quítalos para poder continuar."); return; }
     if (!form.metodo_pago) { setErrorMsg("Selecciona un método de pago."); return; }
+    if (form.metodo_pago === "addi" && (!form.cedula || !addiData.nombre || !addiData.cedula || !addiData.celular)) {
+      setErrorMsg("Completa tu cédula (arriba) y los datos de quien paga con Addi (nombre, cédula y celular).");
+      return;
+    }
     setSubmitting(true);
     setErrorMsg("");
 
@@ -162,6 +196,7 @@ export default function CheckoutClient({ products, promotions, config }) {
       estado_pago,
       referencia: orderId,
       cliente_nombre: form.nombre,
+      cliente_cedula: form.cedula,
       cliente_celular: form.celular,
       cliente_correo: form.correo,
       cliente_direccion: form.direccion,
@@ -174,6 +209,9 @@ export default function CheckoutClient({ products, promotions, config }) {
       recargo,
       total,
       metodo_pago: metodoLabel,
+      addi_nombre: form.metodo_pago === "addi" ? addiData.nombre : null,
+      addi_cedula: form.metodo_pago === "addi" ? addiData.cedula : null,
+      addi_celular: form.metodo_pago === "addi" ? addiData.celular : null,
     });
 
     if (orderError) {
@@ -217,6 +255,7 @@ export default function CheckoutClient({ products, promotions, config }) {
       numero,
       estado_pago,
       cliente_nombre: form.nombre,
+      cliente_cedula: form.cedula,
       cliente_celular: form.celular,
       cliente_direccion: form.direccion,
       cliente_ciudad: form.ciudad,
@@ -228,6 +267,9 @@ export default function CheckoutClient({ products, promotions, config }) {
       recargo,
       total,
       metodo_pago: metodoLabel,
+      addi_nombre: form.metodo_pago === "addi" ? addiData.nombre : null,
+      addi_cedula: form.metodo_pago === "addi" ? addiData.cedula : null,
+      addi_celular: form.metodo_pago === "addi" ? addiData.celular : null,
     });
   }
 
@@ -242,6 +284,12 @@ export default function CheckoutClient({ products, promotions, config }) {
         ) : null}
         <div className="pi-form-grid">
           <input required placeholder="Nombre completo" value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} />
+          <input
+            required={form.metodo_pago === "addi"}
+            placeholder={form.metodo_pago === "addi" ? "Cédula (obligatoria con Addi)" : "Cédula (opcional)"}
+            value={form.cedula}
+            onChange={(e) => setForm({ ...form, cedula: e.target.value })}
+          />
           <input required placeholder="Número de celular" value={form.celular} onChange={(e) => setForm({ ...form, celular: e.target.value })} />
           <input required type="email" placeholder="Correo electrónico" value={form.correo} onChange={(e) => setForm({ ...form, correo: e.target.value })} />
           <input required placeholder="Ciudad" value={form.ciudad} onChange={(e) => setForm({ ...form, ciudad: e.target.value })} />
@@ -261,7 +309,7 @@ export default function CheckoutClient({ products, promotions, config }) {
           ))}
         </div>
         {form.metodo_pago === "transferencia" ? <TransferDetails config={config} /> : null}
-        {form.metodo_pago === "addi" ? <AddiDetails /> : null}
+        {form.metodo_pago === "addi" ? <AddiDetails addiData={addiData} onChange={setAddiData} /> : null}
         {errorMsg ? <div className="pi-error">{errorMsg}</div> : null}
         <button className="btn btn-primary btn-lg btn-block" type="submit" disabled={submitting || agotados.length > 0}>
           {submitting ? "Enviando..." : `Confirmar pedido — ${formatCOP(total)}`}

@@ -19,10 +19,17 @@ export default async function AdminOrdersPage() {
             <tr key={o.id}>
               <td>{o.numero}</td>
               <td>{new Date(o.fecha).toLocaleDateString("es-CO")}</td>
-              <td>{o.cliente_nombre}</td>
+              <td>{o.cliente_nombre}{o.cliente_cedula ? <div style={{ fontSize: 11, color: "var(--muted)" }}>CC {o.cliente_cedula}</div> : null}</td>
               <td>{o.cliente_celular}</td>
               <td>{formatCOP(o.total)}</td>
-              <td>{o.metodo_pago}</td>
+              <td>
+                {o.metodo_pago}
+                {o.addi_nombre ? (
+                  <div style={{ fontSize: 11, color: "var(--gold)", marginTop: 4 }}>
+                    Titular: {o.addi_nombre}<br />CC {o.addi_cedula}<br />{o.addi_celular}
+                  </div>
+                ) : null}
+              </td>
               <td>
                 <form action={updateOrderPaymentStatus} style={{ display: "flex", gap: 6 }}>
                   <input type="hidden" name="id" value={o.id} />

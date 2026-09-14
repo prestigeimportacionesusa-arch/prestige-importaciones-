@@ -95,6 +95,7 @@ create table if not exists orders (
   cliente_direccion text not null,
   cliente_ciudad text not null,
   cliente_departamento text not null,
+  cliente_cedula text,
   barrio text default '',
   info_adicional text default '',
   subtotal numeric not null default 0,
@@ -102,7 +103,10 @@ create table if not exists orders (
   recargo numeric not null default 0,
   total numeric not null default 0,
   metodo_pago text not null,
-  referencia text
+  referencia text,
+  addi_nombre text,
+  addi_cedula text,
+  addi_celular text
 );
 
 create table if not exists order_items (
