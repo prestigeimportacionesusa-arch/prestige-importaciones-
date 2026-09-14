@@ -10,6 +10,18 @@ import { waUrl, waOrderMessage } from "@/lib/whatsapp";
 import { trackInitiateCheckout, trackPurchase } from "@/lib/meta-pixel";
 import { IconWhatsapp } from "./Icons";
 
+function AddiDetails() {
+  return (
+    <div className="pi-transfer-box">
+      <p><b>Compra a cuotas con Addi:</b></p>
+      <p className="pi-transfer-note" style={{ marginTop: 0 }}>
+        Al confirmar tu pedido, te vamos a enviar tu link de pago de Addi por WhatsApp para que completes la
+        aprobación y elijas tus cuotas. Tu pedido queda apartado mientras tanto.
+      </p>
+    </div>
+  );
+}
+
 function TransferDetails({ config }) {
   const cuentas = [
     config.nequi_numero ? { label: "Nequi", numero: config.nequi_numero, titular: config.nequi_titular } : null,
@@ -104,8 +116,10 @@ export default function CheckoutClient({ products, promotions, config }) {
         <p className="pi-order-status-note">
           Estado del pago: <b>{orderResult.estado_pago}</b>
           {orderResult.metodo_pago === PAYMENT_METHOD_LABELS.transferencia ? " — confírmalo enviando tu comprobante por WhatsApp." : ""}
+          {orderResult.metodo_pago === PAYMENT_METHOD_LABELS.addi ? " — te enviaremos tu link de pago Addi por WhatsApp." : ""}
         </p>
         {orderResult.metodo_pago === PAYMENT_METHOD_LABELS.transferencia ? <TransferDetails config={config} /> : null}
+        {orderResult.metodo_pago === PAYMENT_METHOD_LABELS.addi ? <AddiDetails /> : null}
         <a className="btn btn-wa" href={waUrl(config.whatsapp, waOrderMessage(orderResult))} target="_blank" rel="noreferrer">
           <IconWhatsapp size={18} /> Confirmar por WhatsApp
         </a>
@@ -247,6 +261,7 @@ export default function CheckoutClient({ products, promotions, config }) {
           ))}
         </div>
         {form.metodo_pago === "transferencia" ? <TransferDetails config={config} /> : null}
+        {form.metodo_pago === "addi" ? <AddiDetails /> : null}
         {errorMsg ? <div className="pi-error">{errorMsg}</div> : null}
         <button className="btn btn-primary btn-lg btn-block" type="submit" disabled={submitting || agotados.length > 0}>
           {submitting ? "Enviando..." : `Confirmar pedido — ${formatCOP(total)}`}

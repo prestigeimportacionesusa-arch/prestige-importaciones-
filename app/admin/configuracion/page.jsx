@@ -6,14 +6,18 @@ const METHOD_LABELS = {
   tarjeta: "Tarjeta débito/crédito",
   pse: "PSE",
   transferencia: "Transferencia bancaria (Nequi/Bancolombia)",
+  addi: "Addi (paga a cuotas)",
 };
 
-export default async function AdminConfigPage() {
+export default async function AdminConfigPage({ searchParams }) {
+  const sp = await searchParams;
   const cfg = await getConfig();
 
   return (
     <div className="pi-admin-config">
       <h2>Configuración</h2>
+      {sp?.error ? <div className="pi-error" style={{ marginBottom: 16 }}>{sp.error}</div> : null}
+      {sp?.saved ? <div className="pi-transfer-box" style={{ marginBottom: 16 }}>Configuración guardada correctamente.</div> : null}
       <form action={saveConfig}>
         <div className="pi-form-grid">
           <input name="nombre_tienda" placeholder="Nombre de la tienda" defaultValue={cfg.nombre_tienda} />
