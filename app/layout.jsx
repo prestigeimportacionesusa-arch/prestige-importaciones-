@@ -42,7 +42,7 @@ export default async function RootLayout({ children }) {
             <Header nombreTienda={config.nombre_tienda} />
             <main className="pi-main">{children}</main>
             <Footer nombreTienda={config.nombre_tienda} instagram={config.instagram} tiktok={config.tiktok} facebook={config.facebook} />
-            <WhatsAppFloat whatsapp={config.whatsapp} />
+            <WhatsAppFloat whatsapp={config.whatsapp} instagram={config.instagram} tiktok={config.tiktok} />
           </CartProvider>
         </div>
       </body>
