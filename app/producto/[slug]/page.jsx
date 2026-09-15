@@ -6,6 +6,7 @@ import ProductActions from "@/components/ProductActions";
 import TrackViewContent from "@/components/TrackViewContent";
 import ProductCard from "@/components/ProductCard";
 import ReviewForm from "@/components/ReviewForm";
+import ReviewsList from "@/components/ReviewsList";
 import { Diamond } from "@/components/Icons";
 
 export const revalidate = 3600; // se actualiza al instante si el admin edita algo (revalidatePath), esto es solo un techo de seguridad
@@ -99,32 +100,16 @@ export default async function ProductPage({ params, searchParams }) {
         </div>
       </div>
 
-      {reviews.length ? (
-        <div className="pi-section">
-          <div className="pi-section-title align-left"><h2>Reseñas de {product.marca}</h2><Diamond /></div>
-          <div className="pi-reviews-list">
-            {reviews.map((r) => (
-              <div key={r.id} className="pi-review">
-                <div className="pi-review-stars">{"★".repeat(r.estrellas)}{"☆".repeat(5 - r.estrellas)}</div>
-                <div className="pi-review-author">{r.nombre} <span className="pi-review-product-tag">· {r.products?.nombre || product.nombre}</span></div>
-                <p>{r.comentario}</p>
-                {r.fotos?.length ? (
-                  <div className="pi-review-photos-list">
-                    {r.fotos.map((url) => (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img key={url} src={url} alt={`Foto de ${r.nombre}`} className="pi-review-photo" />
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-            ))}
-          </div>
-        </div>
-      ) : null}
-
       <div className="pi-section">
         <ReviewForm productId={product.id} marca={product.marca} slug={product.slug} sent={sp?.reviewSent === "1"} error={sp?.reviewError === "1"} />
       </div>
+
+      {reviews.length ? (
+        <div className="pi-section">
+          <div className="pi-section-title align-left"><h2>Reseñas de {product.marca} ({reviews.length})</h2><Diamond /></div>
+          <ReviewsList reviews={reviews} defaultProductName={product.nombre} />
+        </div>
+      ) : null}
 
       {related.length ? (
         <div className="pi-section">

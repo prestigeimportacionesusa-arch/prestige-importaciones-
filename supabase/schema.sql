@@ -191,6 +191,7 @@ create table if not exists store_config (
   bancolombia_titular text default '',
   breb_llave text default '',
   breb_titular text default '',
+  pedidos_last_seen timestamptz not null default now(),
   constraint store_config_singleton check (id = 1)
 );
 insert into store_config (id) values (1) on conflict (id) do nothing;

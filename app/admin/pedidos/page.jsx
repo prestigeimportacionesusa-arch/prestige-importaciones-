@@ -9,6 +9,12 @@ export default async function AdminOrdersPage() {
   const supabase = await createClient();
   const { data: orders } = await supabase.from("orders").select("*").order("fecha", { ascending: false });
 
+  // Marca "ahora" como el último momento en que se revisaron los pedidos —
+  // así el número de "pedidos nuevos" del menú se reinicia cada vez que
+  // entras aquí, en vez de quedarse pegado hasta cambiar el estado de cada
+  // uno a mano.
+  await supabase.from("store_config").update({ pedidos_last_seen: new Date().toISOString() }).eq("id", 1);
+
   return (
     <div>
       <h2>Pedidos ({orders?.length || 0})</h2>

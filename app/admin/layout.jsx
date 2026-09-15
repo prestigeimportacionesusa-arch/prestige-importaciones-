@@ -20,8 +20,11 @@ async function getAdminBadgeCounts() {
   try {
     const supabase = await createClient();
 
+    const { data: cfg } = await supabase.from("store_config").select("pedidos_last_seen").eq("id", 1).single();
+    const lastSeen = cfg?.pedidos_last_seen || new Date(0).toISOString();
+
     const [{ count: pedidosNuevos }, { count: resenasPendientes }, { data: productosCheck }] = await Promise.all([
-      supabase.from("orders").select("id", { count: "exact", head: true }).eq("estado", "Nuevo"),
+      supabase.from("orders").select("id", { count: "exact", head: true }).gt("fecha", lastSeen),
       supabase.from("reviews").select("id", { count: "exact", head: true }).eq("aprobada", false),
       supabase.from("products").select("revisar, precio, imagen"),
     ]);
