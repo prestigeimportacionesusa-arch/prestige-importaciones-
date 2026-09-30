@@ -1,0 +1,69 @@
+"use client";
+
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { formatCOP, computeFinalPrice } from "@/lib/utils";
+import { useCart } from "@/lib/cart-context";
+import ProductThumb from "./ProductThumb";
+
+function Badge({ children, tone = "gold" }) {
+  return <span className={`pi-badge tone-${tone}`}>{children}</span>;
+}
+
+export default function ProductCard({ product, promotions }) {
+  const { cart, addToCart } = useCart();
+  const router = useRouter();
+  const { price, original, isOffer } = computeFinalPrice(product, promotions);
+  const pct = isOffer && original > price ? Math.round(100 - (price / original) * 100) : 0;
+
+  // "Comprar ahora": pone el perfume en el carrito (si aún no está) y lleva
+  // directo a la página de finalizar compra, sin pasar por el carrito.
+  function buyNow() {
+    if (!cart.some((c) => c.id === product.id)) addToCart(product, 1, price);
+    router.push("/checkout");
+  }
+
+  return (
+    <div className="pi-card">
+      <Link href={`/producto/${product.slug}`} className="pi-card-media">
+        <ProductThumb product={product} />
+        <div className="pi-card-badges">
+          {product.combo_2x409 ? <Badge tone="gold">2x $409.000</Badge> : null}
+          {product.destacado ? <Badge tone="gold">Destacado</Badge> : null}
+          {product.nuevo ? <Badge tone="teal">Nuevo</Badge> : null}
+          {isOffer && pct > 0 ? <Badge tone="wine">-{pct}%</Badge> : isOffer ? <Badge tone="wine">Oferta</Badge> : null}
+          {!product.disponibilidad ? <Badge tone="muted">Agotado</Badge> : null}
+          {product.disponibilidad && Number.isFinite(product.inventario) && product.inventario > 0 && product.inventario <= 5 ? (
+            <Badge tone="wine">Últimas unidades</Badge>
+          ) : null}
+        </div>
+      </Link>
+      <div className="pi-card-body">
+        <div className="pi-card-brand">{product.marca}</div>
+        <Link href={`/producto/${product.slug}`} className="pi-card-name">{product.nombre}</Link>
+        <div className="pi-card-gender">{product.genero}</div>
+        <div className="pi-card-prices">
+          {isOffer && original > price ? <span className="was">{formatCOP(original)}</span> : null}
+          <span className="now">{formatCOP(price)}</span>
+        </div>
+        <div className="pi-card-actions">
+          <Link href={`/producto/${product.slug}`} className="btn btn-ghost">Ver producto</Link>
+          <button
+            className="btn btn-primary"
+            disabled={!product.disponibilidad}
+            onClick={() => addToCart(product, 1, price)}
+          >
+            Agregar
+          </button>
+        </div>
+        <button
+          className="btn btn-primary pi-card-buynow"
+          disabled={!product.disponibilidad}
+          onClick={buyNow}
+        >
+          {product.disponibilidad ? "Comprar ahora" : "Agotado"}
+        </button>
+      </div>
+    </div>
+  );
+}
