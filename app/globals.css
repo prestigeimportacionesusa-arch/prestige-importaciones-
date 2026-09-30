@@ -114,6 +114,8 @@ img { max-width: 100%; display: block; }
       .pi-card-actions .btn { flex:1; padding: 9px 6px; font-size:12px; text-align:center; letter-spacing:0.02em; }
       .pi-card-actions .btn-ghost { border: 1px solid var(--line); color: var(--cream); }
       .pi-card-actions .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+      .pi-card-buynow { width:100%; margin-top:8px; padding: 11px 6px; font-size:13px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; text-align:center; }
+      .pi-card-buynow:disabled { opacity:0.5; cursor:not-allowed; }
 
       .pi-brand-row { display:flex; flex-wrap:wrap; gap:8px; }
       .pi-brand-chip { background: var(--surface); border:1px solid var(--line); color: var(--cream); padding: 8px 14px; font-size: 13px; display:inline-block; }

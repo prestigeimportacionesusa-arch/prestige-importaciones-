@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { formatCOP, computeFinalPrice } from "@/lib/utils";
 import { useCart } from "@/lib/cart-context";
 import ProductThumb from "./ProductThumb";
@@ -10,9 +11,17 @@ function Badge({ children, tone = "gold" }) {
 }
 
 export default function ProductCard({ product, promotions }) {
-  const { addToCart } = useCart();
+  const { cart, addToCart } = useCart();
+  const router = useRouter();
   const { price, original, isOffer } = computeFinalPrice(product, promotions);
   const pct = isOffer && original > price ? Math.round(100 - (price / original) * 100) : 0;
+
+  // "Comprar ahora": pone el perfume en el carrito (si aún no está) y lleva
+  // directo a la página de finalizar compra, sin pasar por el carrito.
+  function buyNow() {
+    if (!cart.some((c) => c.id === product.id)) addToCart(product, 1, price);
+    router.push("/checkout");
+  }
 
   return (
     <div className="pi-card">
@@ -47,6 +56,13 @@ export default function ProductCard({ product, promotions }) {
             Agregar
           </button>
         </div>
+        <button
+          className="btn btn-primary pi-card-buynow"
+          disabled={!product.disponibilidad}
+          onClick={buyNow}
+        >
+          {product.disponibilidad ? "Comprar ahora" : "Agotado"}
+        </button>
       </div>
     </div>
   );

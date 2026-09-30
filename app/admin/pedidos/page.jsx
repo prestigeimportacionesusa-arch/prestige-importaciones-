@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { formatCOP, formatOrderNumber } from "@/lib/utils";
-import { updateOrderStatus, updateOrderPaymentStatus } from "@/lib/actions";
+import { updateOrderStatus, updateOrderPaymentStatus, deleteOrder } from "@/lib/actions";
+import DeleteOrderButton from "@/components/DeleteOrderButton";
 
 const ESTADOS = ["Nuevo", "Confirmado", "Preparando", "Enviado", "Entregado", "Cancelado"];
 const ESTADOS_PAGO = ["Pendiente", "Pagado", "Rechazado", "Cancelado"];
@@ -19,7 +20,7 @@ export default async function AdminOrdersPage() {
     <div>
       <h2>Pedidos ({orders?.length || 0})</h2>
       <table className="pi-admin-table">
-        <thead><tr><th>#</th><th>Fecha</th><th>Cliente</th><th>Teléfono</th><th>Total</th><th>Pago</th><th>Estado de pago</th><th>Estado del pedido</th></tr></thead>
+        <thead><tr><th>#</th><th>Fecha</th><th>Cliente</th><th>Teléfono</th><th>Total</th><th>Pago</th><th>Estado de pago</th><th>Estado del pedido</th><th></th></tr></thead>
         <tbody>
           {(orders || []).map((o) => (
             <tr key={o.id}>
@@ -54,9 +55,15 @@ export default async function AdminOrdersPage() {
                   <button className="btn btn-ghost btn-sm" type="submit">✓</button>
                 </form>
               </td>
+              <td>
+                <form action={deleteOrder}>
+                  <input type="hidden" name="id" value={o.id} />
+                  <DeleteOrderButton numero={formatOrderNumber(o.numero)} />
+                </form>
+              </td>
             </tr>
           ))}
-          {!orders?.length ? <tr><td colSpan="8" className="pi-empty">Aún no hay pedidos.</td></tr> : null}
+          {!orders?.length ? <tr><td colSpan="9" className="pi-empty">Aún no hay pedidos.</td></tr> : null}
         </tbody>
       </table>
       <p className="pi-config-hint">
