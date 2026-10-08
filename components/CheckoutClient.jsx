@@ -3,8 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useCart } from "@/lib/cart-context";
-import { createClient } from "@/lib/supabase/client";
-import { getWompiCheckoutUrl, notifyOrderCreated } from "@/lib/actions";
+import { createOrder } from "@/lib/actions";
 import { formatCOP, formatOrderNumber, computeFinalPrice, hasFreeShipping, computeRecargo, recargoLabel, computeComboDiscount, PAYMENT_METHOD_LABELS } from "@/lib/utils";
 import { waUrl, waOrderMessage } from "@/lib/whatsapp";
 import { trackInitiateCheckout, trackPurchase } from "@/lib/meta-pixel";
@@ -95,6 +94,9 @@ export default function CheckoutClient({ products, promotions, config }) {
 
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  // Si algo falla al confirmar, guardamos el mensaje listo para WhatsApp:
+  // el cliente puede mandarnos el pedido con un clic y la venta no se pierde.
+  const [waFallback, setWaFallback] = useState("");
 
   const lines = cart
     .map((item) => {
@@ -167,8 +169,28 @@ export default function CheckoutClient({ products, promotions, config }) {
     );
   }
 
+  function fallbackMessage(order) {
+    if (order?.numero) return waOrderMessage(order);
+    const metodoLabel = PAYMENT_METHOD_LABELS[form.metodo_pago] || form.metodo_pago || "por definir";
+    return [
+      "Hola, quiero hacer este pedido (la página no me dejó finalizar):",
+      "",
+      ...lines.map((l) => `• ${l.nombre} ${l.marca} x${l.qty} — ${formatCOP(l.subtotal)}`),
+      "",
+      `Total aproximado: ${formatCOP(total)}`,
+      "",
+      `Nombre: ${form.nombre}`,
+      ...(form.cedula ? [`Cédula: ${form.cedula}`] : []),
+      `Celular: ${form.celular}`,
+      `Dirección: ${form.direccion}${form.barrio ? ", barrio " + form.barrio : ""}, ${form.ciudad} (${form.departamento})`,
+      `Método de pago: ${metodoLabel}`,
+    ].join("\n");
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
+    if (submitting) return;
+    setWaFallback("");
     if (agotados.length) { setErrorMsg("Uno o más productos de tu carrito se agotaron. Quítalos para poder continuar."); return; }
     if (!form.metodo_pago) { setErrorMsg("Selecciona un método de pago."); return; }
     if (form.metodo_pago === "addi" && (!form.cedula || !addiData.nombre || !addiData.cedula || !addiData.celular)) {
@@ -178,101 +200,44 @@ export default function CheckoutClient({ products, promotions, config }) {
     setSubmitting(true);
     setErrorMsg("");
 
-    const supabase = createClient();
-    const orderId = crypto.randomUUID();
-    const metodoLabel = PAYMENT_METHOD_LABELS[form.metodo_pago] || form.metodo_pago;
-    // Ningún método marca el pedido como pagado automáticamente en este
-    // momento: contraentrega se paga al recibir, transferencia se confirma
-    // manualmente desde el panel al ver el comprobante, y tarjeta/PSE se
-    // confirman solo cuando Wompi notifica el pago vía webhook (más abajo).
-    const estado_pago = "Pendiente";
-    const esWompi = form.metodo_pago === "tarjeta" || form.metodo_pago === "pse";
-
-    // "numero" no se manda desde aquí — lo asigna la base de datos sola, de
-    // forma secuencial (100, 101, 102...), para que nunca se repita ni
-    // salga desordenado aunque lleguen varios pedidos al mismo tiempo.
-    const { data: insertedOrder, error: orderError } = await supabase.from("orders").insert({
-      id: orderId,
-      estado: "Nuevo",
-      estado_pago,
-      referencia: orderId,
-      cliente_nombre: form.nombre,
-      cliente_cedula: form.cedula,
-      cliente_celular: form.celular,
-      cliente_correo: "",
-      cliente_direccion: form.direccion,
-      cliente_ciudad: form.ciudad,
-      cliente_departamento: form.departamento,
-      barrio: form.barrio,
-      info_adicional: form.info_adicional,
-      subtotal,
-      envio,
-      recargo,
-      total,
-      metodo_pago: metodoLabel,
-      addi_nombre: form.metodo_pago === "addi" ? addiData.nombre : null,
-      addi_cedula: form.metodo_pago === "addi" ? addiData.cedula : null,
-      addi_celular: form.metodo_pago === "addi" ? addiData.celular : null,
-    }).select("numero").single();
-    const numero = insertedOrder?.numero;
-
-    if (orderError) {
+    let result;
+    try {
+      // El pedido se crea en el servidor (ver createOrder en lib/actions.js):
+      // allá se recalculan precios y total, y se guarda con permisos seguros.
+      result = await createOrder({
+        cart: cart.map((c) => ({ id: c.id, qty: c.qty })),
+        form,
+        addi: addiData,
+      });
+    } catch (err) {
+      // Pasa si se cae la conexión, o si la página quedó abierta desde antes
+      // de una actualización del sitio. Nunca dejamos el botón trabado.
       setSubmitting(false);
-      setErrorMsg("No pudimos registrar tu pedido. Intenta de nuevo o escríbenos por WhatsApp.");
+      setErrorMsg("Hubo un problema de conexión. Revisa tu internet y vuelve a intentarlo, o envíanos el pedido por WhatsApp con el botón de abajo.");
+      setWaFallback(fallbackMessage(null));
       return;
     }
 
-    // No bloqueamos ni afectamos la compra del cliente si el correo de
-    // notificación falla por cualquier motivo — es informativo, no crítico.
-    notifyOrderCreated(orderId).catch(() => {});
-
-    const itemRows = lines.map((l) => ({
-      order_id: orderId,
-      product_id: l.id,
-      nombre: l.nombre,
-      marca: l.marca,
-      qty: l.qty,
-      precio: l.precio,
-      subtotal: l.subtotal,
-    }));
-    await supabase.from("order_items").insert(itemRows);
-
-    if (esWompi) {
-      // Para tarjeta/PSE, el pago se procesa en la página de Wompi:
-      // llevamos al cliente allá y el carrito se vacía solo al confirmar.
-      const result = await getWompiCheckoutUrl(orderId);
-      if (result?.url) {
-        clearCart();
-        window.location.href = result.url;
-        return;
-      }
+    if (!result?.ok) {
       setSubmitting(false);
-      setErrorMsg(result?.error || "No pudimos conectar con la pasarela de pago. Intenta de nuevo o escríbenos por WhatsApp.");
+      setErrorMsg(result?.error || "No pudimos registrar tu pedido. Intenta de nuevo o escríbenos por WhatsApp.");
+      setWaFallback(fallbackMessage(result?.order));
+      if (result?.order?.numero) clearCart();
+      return;
+    }
+
+    const order = result.order;
+    if (result.paymentUrl) {
+      // Tarjeta/PSE: el pago se hace en Wompi. El carrito se vacía ahora y
+      // la compra se confirma en /checkout/confirmacion al volver.
+      clearCart();
+      window.location.href = result.paymentUrl;
       return;
     }
 
     clearCart();
     setSubmitting(false);
-    setOrderResult({
-      numero,
-      estado_pago,
-      cliente_nombre: form.nombre,
-      cliente_cedula: form.cedula,
-      cliente_celular: form.celular,
-      cliente_direccion: form.direccion,
-      cliente_ciudad: form.ciudad,
-      cliente_departamento: form.departamento,
-      barrio: form.barrio,
-      items: lines,
-      subtotal,
-      envio,
-      recargo,
-      total,
-      metodo_pago: metodoLabel,
-      addi_nombre: form.metodo_pago === "addi" ? addiData.nombre : null,
-      addi_cedula: form.metodo_pago === "addi" ? addiData.cedula : null,
-      addi_celular: form.metodo_pago === "addi" ? addiData.celular : null,
-    });
+    setOrderResult(order);
   }
 
   return (
@@ -311,7 +276,12 @@ export default function CheckoutClient({ products, promotions, config }) {
         </div>
         {form.metodo_pago === "transferencia" ? <TransferDetails config={config} /> : null}
         {form.metodo_pago === "addi" ? <AddiDetails addiData={addiData} onChange={setAddiData} /> : null}
-        {errorMsg ? <div className="pi-error">{errorMsg}</div> : null}
+        {errorMsg ? <div className="pi-error" style={{ fontSize: 14, margin: "12px 0" }}>{errorMsg}</div> : null}
+        {waFallback ? (
+          <a className="btn btn-wa btn-block" style={{ marginBottom: 12 }} href={waUrl(config.whatsapp, waFallback)} target="_blank" rel="noreferrer">
+            <IconWhatsapp size={18} /> Enviar mi pedido por WhatsApp
+          </a>
+        ) : null}
         <button className="btn btn-primary btn-lg btn-block" type="submit" disabled={submitting || agotados.length > 0}>
           {submitting ? "Enviando..." : `Confirmar pedido — ${formatCOP(total)}`}
         </button>
