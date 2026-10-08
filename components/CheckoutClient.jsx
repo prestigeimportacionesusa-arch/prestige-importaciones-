@@ -228,9 +228,10 @@ export default function CheckoutClient({ products, promotions, config }) {
 
     const order = result.order;
     if (result.paymentUrl) {
-      // Tarjeta/PSE: el pago se hace en Wompi. El carrito se vacía ahora y
-      // la compra se confirma en /checkout/confirmacion al volver.
-      clearCart();
+      // Tarjeta/PSE: el pago se hace en Wompi. El carrito NO se vacía aquí:
+      // si el cliente se devuelve o le rechazan la tarjeta, sus perfumes
+      // siguen en el carrito. Se vacía en /checkout/confirmacion al volver
+      // con el pago aprobado o en proceso.
       window.location.href = result.paymentUrl;
       return;
     }

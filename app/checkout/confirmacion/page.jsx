@@ -6,6 +6,7 @@ import { formatCOP, formatOrderNumber } from "@/lib/utils";
 import { waUrl, waOrderMessage } from "@/lib/whatsapp";
 import { IconWhatsapp } from "@/components/Icons";
 import TrackPurchaseIfPaid from "@/components/TrackPurchaseIfPaid";
+import ClearCartOnConfirm from "@/components/ClearCartOnConfirm";
 
 export const metadata = { title: "Confirmación de pedido — Prestige Importaciones" };
 
@@ -48,18 +49,24 @@ export default async function ConfirmacionPage({ searchParams }) {
     );
   }
 
-  // Consultamos a Wompi solo para dar una respuesta inmediata más precisa al
-  // cliente (por ejemplo, si el webhook todavía no ha llegado). El estado
-  // real y definitivo del pedido en nuestra base de datos (order.estado_pago)
-  // solo lo actualiza el webhook verificado — nunca esta consulta.
-  let estadoMostrado = order.estado_pago;
+  // Consultamos a Wompi solo para darle al cliente una respuesta inmediata y
+  // correcta (el webhook puede tardar unos segundos en llegar). El estado
+  // definitivo del pedido en la base de datos (order.estado_pago) solo lo
+  // cambia el webhook verificado — nunca esta consulta.
+  let estadoCliente = order.estado_pago;
   if (wompiId && order.estado_pago === "Pendiente") {
-    const tx = await fetchWompiTransaction(wompiId);
-    if (tx?.status === "APPROVED") estadoMostrado = "Pagado (confirmando...)";
-    else if (tx?.status === "DECLINED" || tx?.status === "ERROR") estadoMostrado = "Rechazado";
+    try {
+      const tx = await fetchWompiTransaction(wompiId);
+      if (tx?.reference === order.referencia) {
+        if (tx.status === "APPROVED") estadoCliente = "Pagado";
+        else if (tx.status === "DECLINED" || tx.status === "ERROR" || tx.status === "VOIDED") estadoCliente = "Rechazado";
+      }
+    } catch {
+      // Si Wompi no responde, mostramos "en proceso" y el webhook hará el resto.
+    }
   }
-
-  const mensaje = ESTADO_MENSAJE[order.estado_pago] || { texto: "Estamos confirmando tu pago...", tono: "pendiente" };
+  const rechazado = estadoCliente === "Rechazado";
+  const mensaje = ESTADO_MENSAJE[estadoCliente] || { texto: "Estamos confirmando tu pago...", tono: "pendiente" };
   const waOrder = {
     numero: order.numero,
     cliente_nombre: order.cliente_nombre,
@@ -68,7 +75,7 @@ export default async function ConfirmacionPage({ searchParams }) {
     cliente_ciudad: order.cliente_ciudad,
     cliente_departamento: order.cliente_departamento,
     barrio: order.barrio,
-    items: (order.order_items || []).map((it) => ({ nombre: it.nombre, marca: it.marca, qty: it.qty, subtotal: it.subtotal })),
+    items: (order.order_items || []).map((it) => ({ id: it.product_id, nombre: it.nombre, marca: it.marca, qty: it.qty, subtotal: it.subtotal })),
     subtotal: order.subtotal,
     envio: order.envio,
     recargo: order.recargo,
@@ -77,14 +84,39 @@ export default async function ConfirmacionPage({ searchParams }) {
     estado_pago: order.estado_pago,
   };
 
+  const waRechazo = [
+    `Hola, intenté pagar mi pedido *#${formatOrderNumber(order.numero)}* (${formatCOP(order.total)}) con ${order.metodo_pago} pero el pago fue rechazado.`,
+    "¿Me ayudan a pagarlo de otra forma?",
+  ].join("\n");
+
+  if (rechazado) {
+    return (
+      <div className="pi-order-confirm">
+        <h1>Tu pago no se completó</h1>
+        <p>
+          El banco o la pasarela rechazó el pago de tu pedido <b>#{formatOrderNumber(order.numero)}</b> por {formatCOP(order.total)}.
+          No te preocupes: tus perfumes siguen en el carrito.
+        </p>
+        <p className="pi-order-status-note">
+          Puedes intentarlo de nuevo con otra tarjeta, elegir <b>pago contra entrega</b> o <b>transferencia</b>, o escribirnos y te ayudamos a pagar.
+        </p>
+        <Link href="/checkout" className="btn btn-primary">Intentar de nuevo / otro método de pago</Link>
+        <a className="btn btn-wa" href={waUrl(config.whatsapp, waRechazo)} target="_blank" rel="noreferrer">
+          <IconWhatsapp size={18} /> Pagar con ayuda por WhatsApp
+        </a>
+      </div>
+    );
+  }
+
   return (
     <div className="pi-order-confirm">
-      <TrackPurchaseIfPaid order={waOrder} />
+      <ClearCartOnConfirm clear />
+      <TrackPurchaseIfPaid order={{ ...waOrder, estado_pago: order.estado_pago }} />
       <h1>¡Gracias, {order.cliente_nombre.split(" ")[0]}!</h1>
       <p>Tu pedido <b>#{formatOrderNumber(order.numero)}</b> fue registrado por {formatCOP(order.total)}.</p>
       <p className={`pi-order-status-note pi-status-${mensaje.tono}`}>{mensaje.texto}</p>
-      {estadoMostrado !== order.estado_pago ? (
-        <p className="pi-order-status-note">Actualizando estado final del pago... refresca en unos segundos si no cambia.</p>
+      {estadoCliente !== order.estado_pago ? (
+        <p className="pi-order-status-note">Estamos registrando la confirmación del pago. No tienes que hacer nada más.</p>
       ) : null}
       <a className="btn btn-wa" href={waUrl(config.whatsapp, waOrderMessage(waOrder))} target="_blank" rel="noreferrer">
         <IconWhatsapp size={18} /> Confirmar por WhatsApp
