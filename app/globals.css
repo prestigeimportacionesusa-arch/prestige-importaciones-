@@ -426,3 +426,18 @@ img { max-width: 100%; display: block; }
 .pi-review-photo-thumb { position:relative; width:70px; height:70px; }
 .pi-review-photo-thumb img { width:100%; height:100%; object-fit:cover; border:1px solid var(--line); }
 .pi-review-photo-remove { position:absolute; top:-6px; right:-6px; width:20px; height:20px; border-radius:50%; background: var(--wine); color:#fff; border:none; cursor:pointer; font-size:14px; line-height:1; }
+
+/* Detalle de cada pedido en el panel (perfumes + datos de envío) */
+.pi-admin-table tr.pi-order-row td { border-bottom: none; }
+.pi-order-detail-row td { padding-top: 0; }
+.pi-order-detail summary { cursor: pointer; color: var(--gold); font-size: 13px; padding: 4px 0 8px; }
+.pi-order-detail[open] summary { margin-bottom: 8px; }
+.pi-order-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: var(--surface); border: 1px solid var(--line); padding: 14px; margin-bottom: 10px; }
+.pi-order-detail-grid h4 { margin: 0 0 8px; font-size: 13px; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: .04em; }
+.pi-order-items { width: 100%; border-collapse: collapse; }
+.pi-order-items td { padding: 5px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+.pi-order-items-total td { font-weight: 700; color: var(--gold); border-bottom: none; }
+.pi-order-ship { display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; margin: 0; font-size: 13px; }
+.pi-order-ship dt { color: var(--muted); }
+.pi-order-ship dd { margin: 0; }
+@media (max-width: 760px) { .pi-order-detail-grid { grid-template-columns: 1fr; } }
